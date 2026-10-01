@@ -3,7 +3,7 @@ import { chromium } from 'playwright-core';
 
 const [url = 'http://localhost:5173/', name = 'shot', w = '1440', h = '900', scroll = '0', wait = '2600', full = ''] =
   process.argv.slice(2);
-const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium' });
 const page = await browser.newPage({ viewport: { width: +w, height: +h }, deviceScaleFactor: 1 });
 const errors = [];
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));

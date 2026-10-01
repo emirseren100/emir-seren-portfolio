@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
+import { LazyMount } from '../../components/LazyMount';
 import { Reveal } from '../../components/Reveal';
 import { SplitWords } from '../../components/SplitWords';
 import type { Project } from '../../content/projects';
@@ -36,7 +37,9 @@ export function ProjectChapter({ project: p, layout, visual }: Props) {
 
       <div className={`grid ${styles.body}`}>
         <Reveal className={styles.visual} delay={120}>
-          {visual}
+          <LazyMount margin="900px 0px" fallback={<div className={styles.visualFallback} data-layout={layout} />}>
+            {visual}
+          </LazyMount>
         </Reveal>
 
         <div className={styles.info}>

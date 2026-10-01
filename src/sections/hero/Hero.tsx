@@ -36,10 +36,13 @@ export function Hero() {
   const [ready, setReady] = useState(false);
   const reduced = useReducedMotion();
   const coarse = useCoarsePointer();
-  const twoLines = useMediaQuery('(max-width: 760px)');
+  const twoLines = useMediaQuery('(max-width: 760px), (max-aspect-ratio: 4/5)');
   const short = useMediaQuery('(max-height: 720px) and (min-width: 761px)');
 
   const lines = twoLines ? NAME.split(' ') : [NAME];
+  const heightRatio = twoLines ? 0.5 : short ? 0.3 : 0.36;
+  // Mirrors the fitting script's height limit so the first paint is already the right size.
+  const fitHeight = `${((heightRatio / (0.82 * lines.length)) * 100).toFixed(2)}svh`;
 
   useEffect(() => {
     let alive = true;
@@ -56,7 +59,7 @@ export function Hero() {
     layoutKey: lines.join('|'),
     ready,
     reduced,
-    maxHeightRatio: twoLines ? 0.5 : short ? 0.3 : 0.36,
+    maxHeightRatio: heightRatio,
   });
 
   // Scroll-linked exit: the stage sinks a little and the meta fades as you leave.
@@ -137,8 +140,9 @@ export function Hero() {
       id="top"
       data-theme="dark"
       data-chapter="top"
-      className={`${styles.hero} ${ready ? styles.ready : ''} ${active ? styles.active : ''}`}
+      className={`${styles.hero} ${ready ? styles.ready : ''} ${active ? styles.active : ''} ${twoLines ? styles.twoLines : ''}`}
       aria-labelledby="hero-title"
+      style={{ '--fit-h': fitHeight } as CSSProperties}
     >
       <div className={`wrap ${styles.inner}`}>
         <div className={`grid ${styles.meta}`}>

@@ -112,6 +112,8 @@ export function useWalkableName({
 
     function fit() {
       const cs = getComputedStyle(name!);
+      // Size changes must apply instantly, or the reads below see a mid-transition value.
+      name!.style.transition = 'none';
       name!.style.fontSize = '100px';
       kern(100, cs.fontFamily, cs.fontWeight);
       const lines = Array.from(name!.querySelectorAll<HTMLElement>('[data-line-el]'));
@@ -279,9 +281,11 @@ export function useWalkableName({
 
     /* ---------- Lifecycle ---------- */
 
+    // Until the display face has loaded, CSS gives the name a close estimate of its size.
+    if (!ready) return;
     measure();
 
-    if (ready) {
+    {
       const b = firstBox();
       if (reduced) {
         placeOn(b);
@@ -294,15 +298,17 @@ export function useWalkableName({
       }
       render();
       wake();
-    } else {
-      player.style.transform = 'translate3d(-200px,-200px,0)';
     }
 
+    let lastWidth = stage.clientWidth;
     const ro = new ResizeObserver(() => {
+      // Observing fires once immediately, and height changes don't move the letters.
+      if (stage.clientWidth === lastWidth) return;
+      lastWidth = stage.clientWidth;
       const standing = body.standingOn?.id;
       measure();
-      const box = boxes.find((bx) => bx.index === standing) ?? (ready ? firstBox() : undefined);
-      if (box && ready && body.grounded) placeOn(box);
+      const box = boxes.find((bx) => bx.index === standing) ?? firstBox();
+      if (box && body.grounded) placeOn(box);
       render();
       wake();
     });

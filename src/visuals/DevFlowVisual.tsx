@@ -30,7 +30,8 @@ export function DevFlowVisual({ large = false }: { large?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const { tick, takeOver } = useAutoplay(ref, 2400);
   const [manual, setManual] = useState(0);
-  const step = tick + manual + 1;
+  // Start a few steps in, so the event log already has some history.
+  const step = tick + manual + 5;
   const now = describe(step);
   const log = Array.from({ length: Math.min(5, step + 1) }, (_, i) => ({ step: step - i, ...describe(step - i) }));
 

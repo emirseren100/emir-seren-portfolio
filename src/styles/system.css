@@ -113,6 +113,7 @@ em {
 }
 .split .w {
   display: inline-block;
+  text-indent: 0; /* inherited indents would re-apply inside every word */
   overflow: clip;
   overflow-clip-margin: 0.04em;
   vertical-align: top;

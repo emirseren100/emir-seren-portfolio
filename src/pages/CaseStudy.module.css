@@ -187,6 +187,7 @@
 }
 
 .quote {
+  text-indent: -0.42em;
   font-family: var(--font-serif);
   font-style: italic;
   font-size: clamp(1.75rem, 1rem + 2.8vw, 3.75rem);

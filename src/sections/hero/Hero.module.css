@@ -55,6 +55,7 @@
 .stage {
   grid-row: 3;
   position: relative;
+  container-type: inline-size;
   margin-block: clamp(2.5rem, 7vh, 5rem) clamp(1.25rem, 3.5vh, 2.5rem);
   cursor: pointer;
   touch-action: manipulation;
@@ -73,7 +74,8 @@
   margin: 0;
   font-family: var(--font-sans);
   font-weight: 560;
-  font-size: 12vw; /* replaced by the fitting script */
+  /* A close estimate of the fitted size; the script refines it by a pixel or two. */
+  font-size: min(calc(100cqw / 4.37), var(--fit-h));
   line-height: 0.86;
   letter-spacing: -0.035em;
   font-variation-settings: 'opsz' 96;
@@ -389,12 +391,14 @@
   .keys {
     display: none;
   }
-  .name {
-    line-height: 0.92;
-  }
-  .line + .line {
-    margin-left: auto;
-  }
+}
+
+/* Two-line name (phones and portrait tablets): the second line steps right. */
+.twoLines .name {
+  font-size: min(calc(100cqw / 2.24), var(--fit-h));
+}
+.line + .line {
+  margin-left: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {

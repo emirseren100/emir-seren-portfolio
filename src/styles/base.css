@@ -169,12 +169,14 @@ canvas {
   html:focus-within {
     scroll-behavior: auto;
   }
+  /* Zero, not 1ms: a 1ms duration would make every property (transition-property: all) animate. */
   *,
   *::before,
   *::after {
-    animation-duration: 1ms !important;
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 1ms !important;
-    transition-delay: 0ms !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
   }
 }

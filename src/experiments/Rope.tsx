@@ -28,9 +28,11 @@ export default function Rope() {
           const len = height * lengths[i]!;
           const seg = len / n;
           const pts: Pt[] = [];
+          // Start each rope swung out to one side, so it settles into place on first view.
+          const swing = (i - 1) * 0.5 + 0.9;
           for (let k = 0; k <= n; k++) {
-            const x = width * ax;
-            const y = 14 + k * seg;
+            const x = width * ax + Math.sin(swing) * k * seg;
+            const y = 14 + Math.cos(swing) * k * seg;
             pts.push({ x, y, px: x, py: y, pinned: k === 0 });
           }
           return { pts, seg };

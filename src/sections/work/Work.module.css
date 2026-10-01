@@ -105,6 +105,13 @@
   grid-column: 1 / span 8;
 }
 
+.visualFallback {
+  aspect-ratio: 16 / 10.5;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #12110f;
+}
+
 .info {
   grid-column: 9 / span 4;
   display: flex;

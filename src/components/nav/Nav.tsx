@@ -11,7 +11,7 @@ type Tone = 'dark' | 'paper';
  * way down.
  */
 export function Nav() {
-  const { path } = useRouter();
+  const { path, navigate } = useRouter();
   const home = path === '/';
   const [tone, setTone] = useState<Tone>('dark');
   const [chapter, setChapter] = useState('top');
@@ -193,7 +193,17 @@ export function Nav() {
           <ul className={styles.menuList}>
             {nav.map((n, i) => (
               <li key={n.id} style={{ '--i': i } as CSSProperties}>
-                <Link to={href(n.id)} className={styles.menuLink} onClick={() => setOpen(false)}>
+                <Link
+                  to={href(n.id)}
+                  className={styles.menuLink}
+                  onClick={(e) => {
+                    if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+                    e.preventDefault();
+                    setOpen(false);
+                    // Wait for the scroll lock to lift before scrolling.
+                    requestAnimationFrame(() => requestAnimationFrame(() => navigate(href(n.id))));
+                  }}
+                >
                   <span className={styles.menuIdx}>{chapterNumber(n.id)}</span>
                   <span className={styles.menuWord}>{n.label}</span>
                 </Link>
