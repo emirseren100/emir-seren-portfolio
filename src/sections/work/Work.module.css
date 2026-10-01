@@ -1,0 +1,328 @@
+.section {
+  padding-block: calc(var(--section-y) * 0.6) var(--section-y);
+}
+
+.title {
+  margin-top: clamp(2.5rem, 6vw, 5rem);
+  font-size: var(--t-h2);
+  font-weight: 480;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  max-width: 14ch;
+}
+
+.intro {
+  margin-top: 2rem;
+  margin-left: calc((100% + var(--col-gap)) / 12 * 6);
+  max-width: 38ch;
+  font-size: var(--t-body);
+  color: var(--fg-2);
+}
+
+/* ---------- Chapter ---------- */
+
+.chapter,
+.teaser {
+  margin-top: clamp(6rem, 12vw, 11rem);
+}
+
+.head {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+  align-items: end;
+  row-gap: 0.75rem;
+}
+
+.idx {
+  grid-column: 1 / span 1;
+  font-family: var(--font-mono);
+  font-size: var(--t-mono);
+  color: var(--ink);
+  align-self: start;
+  padding-top: 0.6rem;
+}
+
+.name {
+  grid-column: 2 / span 8;
+  font-size: var(--t-h1);
+  font-weight: 520;
+  line-height: 0.86;
+  letter-spacing: -0.055em;
+  margin-left: -0.05em;
+}
+
+.nameLink {
+  display: inline-flex;
+  align-items: baseline;
+  transition: color var(--dur-short) var(--ease-out);
+}
+.nameUnit {
+  display: inline-block;
+  width: 0;
+  height: 0.16em;
+  margin-right: 0;
+  background: var(--ink);
+  transition:
+    width 600ms var(--ease-out),
+    margin 600ms var(--ease-out);
+}
+.nameLink:hover .nameUnit,
+.nameLink:focus-visible .nameUnit {
+  width: 0.16em;
+  margin-right: 0.12em;
+}
+
+.kind {
+  grid-column: 10 / span 3;
+  justify-self: end;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: var(--t-mono);
+  color: var(--fg-3);
+  max-width: 22ch;
+  padding-bottom: 0.4rem;
+  opacity: 0;
+  transition: opacity var(--dur-reveal) var(--ease-out) 300ms;
+}
+:global(.is-in) > .kind {
+  opacity: 1;
+}
+
+.headRule {
+  grid-column: 1 / -1;
+  margin-top: clamp(1rem, 2vw, 1.75rem);
+  --d: 150ms;
+}
+
+.body {
+  margin-top: clamp(1.75rem, 3vw, 2.75rem);
+  row-gap: 2.5rem;
+  align-items: start;
+}
+
+.visual {
+  grid-column: 1 / span 8;
+}
+
+.info {
+  grid-column: 9 / span 4;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-top: 0.25rem;
+}
+
+.tagline {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--t-h3);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  max-width: 16ch;
+}
+
+.brief {
+  color: var(--fg-2);
+  max-width: 40ch;
+}
+
+.meta {
+  display: grid;
+  border-top: 1px solid var(--line);
+}
+.meta > div {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 1rem;
+  padding-block: 0.6rem;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--t-small);
+}
+.meta dt {
+  font-family: var(--font-mono);
+  font-size: var(--t-mono);
+  color: var(--fg-3);
+  padding-top: 0.15em;
+}
+.meta dd {
+  color: var(--fg);
+}
+
+/* ---------- CTA ---------- */
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  font-weight: 500;
+  font-size: var(--t-body);
+  padding-block: 0.4rem;
+}
+.ctaArrow {
+  position: relative;
+  display: inline-block;
+  width: 2.25rem;
+  height: 1px;
+  background: currentColor;
+  transition:
+    width 500ms var(--ease-out),
+    background-color 300ms var(--ease-out);
+}
+.ctaArrow > span {
+  position: absolute;
+  right: 0;
+  top: -3.5px;
+  width: 8px;
+  height: 8px;
+  border-top: 1px solid currentColor;
+  border-right: 1px solid currentColor;
+  transform: rotate(45deg);
+}
+.cta:hover .ctaArrow,
+.cta:focus-visible .ctaArrow {
+  width: 3.5rem;
+}
+.cta:hover {
+  color: var(--ink);
+}
+.ctaDown {
+  transform: rotate(90deg) translateX(0.2rem);
+  width: 1.5rem;
+  margin-inline: 0.4rem;
+}
+.cta:hover .ctaDown {
+  width: 1.5rem;
+  transform: rotate(90deg) translateX(0.5rem);
+}
+
+/* ---------- Layout B: text left, visual right, name right ---------- */
+
+.chapter[data-layout='b'] .name {
+  grid-column: 4 / span 9;
+  justify-self: end;
+  text-align: right;
+}
+.chapter[data-layout='b'] .kind {
+  grid-column: 2 / span 2;
+  grid-row: 1;
+  justify-self: start;
+  text-align: left;
+}
+.chapter[data-layout='b'] .visual {
+  grid-column: 5 / span 8;
+  grid-row: 1;
+}
+.chapter[data-layout='b'] .info {
+  grid-column: 1 / span 4;
+  grid-row: 1;
+  padding-right: 1rem;
+}
+
+/* ---------- Layout C: visual full, info in a row beneath ---------- */
+
+.chapter[data-layout='c'] .visual {
+  grid-column: 2 / span 10;
+}
+.chapter[data-layout='c'] .info {
+  grid-column: 2 / span 10;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1.2fr;
+  gap: var(--col-gap);
+  align-items: start;
+}
+.chapter[data-layout='c'] .info > :last-child {
+  grid-column: 3;
+}
+
+/* ---------- Playground teaser ---------- */
+
+.teaserBody {
+  margin-top: clamp(1.75rem, 3vw, 2.75rem);
+  row-gap: 2rem;
+}
+.teaserText {
+  grid-column: 2 / span 4;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.teaserField {
+  grid-column: 6 / span 7;
+  height: clamp(260px, 28vw, 380px);
+  border-left: 1px solid var(--line);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1100px) {
+  .visual,
+  .chapter[data-layout='b'] .visual,
+  .chapter[data-layout='c'] .visual {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+  .info,
+  .chapter[data-layout='b'] .info,
+  .chapter[data-layout='c'] .info {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--col-gap);
+    padding-right: 0;
+  }
+  .chapter[data-layout='c'] .info > :last-child {
+    grid-column: auto;
+  }
+  .tagline {
+    grid-column: 1 / -1;
+  }
+  .teaserText {
+    grid-column: 1 / span 5;
+  }
+  .teaserField {
+    grid-column: 6 / span 7;
+  }
+}
+
+@media (max-width: 760px) {
+  .intro {
+    margin-left: 0;
+  }
+  .idx {
+    grid-column: 1 / -1;
+    padding-top: 0;
+  }
+  .name,
+  .chapter[data-layout='b'] .name {
+    grid-column: 1 / -1;
+    justify-self: start;
+    text-align: left;
+    font-size: clamp(3.25rem, 17vw, 6rem);
+  }
+  .kind,
+  .chapter[data-layout='b'] .kind {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    justify-self: start;
+    text-align: left;
+    max-width: none;
+  }
+  .info,
+  .chapter[data-layout='b'] .info,
+  .chapter[data-layout='c'] .info {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .teaserText,
+  .teaserField {
+    grid-column: 1 / -1;
+  }
+  .teaserField {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    height: 260px;
+  }
+}

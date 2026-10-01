@@ -1,0 +1,185 @@
+/* ---------- Layout ---------- */
+
+.wrap {
+  width: 100%;
+  max-width: var(--max-w);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+}
+
+/* Paper sections flip the palette locally. */
+[data-theme='paper'] {
+  --fg: var(--on-paper);
+  --fg-2: var(--on-paper-2);
+  --fg-3: var(--on-paper-3);
+  --line: var(--line-paper);
+  --line-strong: var(--line-paper-strong);
+  background: var(--paper-0);
+  color: var(--fg);
+  color-scheme: light;
+}
+[data-theme='paper'] ::selection {
+  background: var(--on-paper);
+  color: var(--paper-0);
+}
+[data-theme='paper'] :focus-visible {
+  outline-color: var(--signal-deep);
+}
+
+/* ---------- Type ---------- */
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--t-mono);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--t-mono);
+  letter-spacing: 0.01em;
+  color: var(--fg-3);
+  text-transform: none;
+}
+
+.serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+.display {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.9;
+}
+
+.lead {
+  font-size: var(--t-lead);
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  font-weight: 400;
+}
+
+/* ---------- Links ---------- */
+
+/* Underline that draws in from the left and leaves to the right. */
+.u-link {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 100% 100%;
+  background-repeat: no-repeat;
+  transition: background-size 500ms var(--ease-out);
+  padding-bottom: 0.08em;
+}
+.u-link:hover,
+.u-link:focus-visible {
+  background-size: 100% 1px;
+  background-position: 0% 100%;
+}
+
+.u-link--on {
+  background-size: 100% 1px;
+  background-position: 0% 100%;
+}
+.u-link--on:hover {
+  background-size: 0% 1px;
+  background-position: 100% 100%;
+}
+
+/* ---------- Reveal system ---------- */
+
+/* Words rise out of a mask. The mask is padded so descenders never clip. */
+.split {
+  --d: 0ms;
+}
+.split .w {
+  display: inline-block;
+  overflow: clip;
+  overflow-clip-margin: 0.04em;
+  vertical-align: top;
+  padding-block: 0.06em 0.12em;
+  margin-block: -0.06em -0.12em;
+}
+.split .wi {
+  display: inline-block;
+  transform: translate3d(0, 112%, 0);
+  transition: transform var(--dur-reveal) var(--ease-out);
+  transition-delay: calc(var(--d) + var(--i, 0) * var(--stagger));
+  will-change: transform;
+}
+.is-in .split .wi,
+.split.is-in .wi {
+  transform: none;
+}
+
+[data-reveal] {
+  --d: 0ms;
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity var(--dur-reveal) var(--ease-out),
+    transform var(--dur-reveal) var(--ease-out);
+  transition-delay: var(--d);
+}
+[data-reveal='fade'] {
+  transform: none;
+}
+[data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Hairlines that draw across. */
+.rule {
+  height: 1px;
+  background: var(--line);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform var(--dur-long) var(--ease-out);
+  transition-delay: var(--d, 0ms);
+}
+.is-in .rule,
+.rule.is-in {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .split .wi,
+  [data-reveal],
+  .rule {
+    transform: none !important;
+  }
+  [data-reveal] {
+    opacity: 1;
+  }
+}
+
+/* ---------- The unit ---------- */
+
+/* The square. It is the player, the logo and the full stop. */
+.unit {
+  display: inline-block;
+  width: 0.62em;
+  height: 0.62em;
+  background: var(--signal);
+  vertical-align: baseline;
+}

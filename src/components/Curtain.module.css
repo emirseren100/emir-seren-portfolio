@@ -1,0 +1,48 @@
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  pointer-events: none;
+  clip-path: inset(100% 0 0 0);
+  display: grid;
+  place-items: center;
+  color: var(--ink-0);
+}
+
+.curtain[data-phase='cover'] {
+  pointer-events: auto;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 620ms var(--ease-in-out);
+}
+
+.curtain[data-phase='reveal'] {
+  pointer-events: auto;
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 760ms var(--ease-in-out);
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+  transition:
+    opacity 300ms var(--ease-out),
+    transform 500ms var(--ease-out);
+}
+.curtain[data-phase='cover'] .label {
+  opacity: 1;
+  transform: none;
+  transition-delay: 260ms;
+}
+.curtain[data-phase='reveal'] .label {
+  opacity: 0;
+  transform: translate3d(0, -12px, 0);
+}
+
+.unit {
+  width: 0.7rem;
+  height: 0.7rem;
+  background: var(--ink-0);
+}

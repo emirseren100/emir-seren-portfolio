@@ -1,0 +1,77 @@
+.diagram {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.link line {
+  stroke: var(--fg-3);
+  stroke-width: 1;
+  stroke-dasharray: var(--len);
+  stroke-dashoffset: var(--len);
+  transition: stroke-dashoffset 1100ms var(--ease-in-out);
+  transition-delay: calc(500ms + var(--i) * 120ms);
+}
+.link text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: var(--fg-3);
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out);
+  transition-delay: calc(1300ms + var(--i) * 120ms);
+  paint-order: stroke;
+  stroke: var(--paper-0);
+  stroke-width: 6px;
+}
+.in .link line {
+  stroke-dashoffset: 0;
+}
+.in .link text {
+  opacity: 1;
+}
+
+.box {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 700ms var(--ease-out),
+    transform 900ms var(--ease-out);
+  transition-delay: calc(var(--i) * 80ms);
+}
+.in .box {
+  opacity: 1;
+  transform: none;
+}
+.box rect:first-child {
+  fill: var(--paper-0);
+  stroke: var(--on-paper);
+  stroke-width: 1;
+}
+.box line {
+  stroke: var(--line-paper-strong);
+}
+.mark {
+  fill: var(--ink-accent, var(--signal-deep));
+}
+.title {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 560;
+  fill: var(--on-paper);
+}
+.field {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  fill: var(--on-paper-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link line {
+    stroke-dashoffset: 0;
+  }
+  .link text,
+  .box {
+    opacity: 1;
+    transform: none;
+  }
+}

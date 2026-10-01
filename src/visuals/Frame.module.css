@@ -1,0 +1,55 @@
+.frame {
+  --frame-bg: #12110f;
+  position: relative;
+  margin: 0;
+  background: var(--frame-bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  color: var(--paper-0);
+  font-size: 0.8125rem;
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.03) inset,
+    0 40px 80px -40px rgb(0 0 0 / 0.6);
+}
+
+.bar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  height: 2.4rem;
+  padding-inline: 0.9rem;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--fg-3);
+}
+
+.app {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--paper-0);
+}
+
+.dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--ink, var(--signal));
+}
+
+.context {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.right {
+  display: inline-flex;
+  gap: 0.75rem;
+}
+
+.body {
+  position: relative;
+}

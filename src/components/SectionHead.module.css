@@ -1,0 +1,33 @@
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: var(--t-mono);
+  color: var(--fg-3);
+}
+
+.index,
+.label,
+.aside {
+  opacity: 0;
+  transition: opacity var(--dur-reveal) var(--ease-out);
+}
+.label {
+  color: var(--fg);
+  transition-delay: 80ms;
+}
+.aside {
+  transition-delay: 300ms;
+}
+:global(.is-in) > .index,
+:global(.is-in) > .label,
+:global(.is-in) > .aside {
+  opacity: 1;
+}
+
+.rule {
+  flex: 1;
+  align-self: center;
+  --d: 120ms;
+}

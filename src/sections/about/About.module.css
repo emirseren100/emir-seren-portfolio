@@ -1,0 +1,276 @@
+.section {
+  padding-block: var(--section-y) calc(var(--section-y) * 0.7);
+}
+
+.title {
+  margin-top: clamp(2.5rem, 6vw, 5rem);
+  font-size: var(--t-h1);
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+  max-width: 11ch;
+}
+
+.intro {
+  margin-top: clamp(2.5rem, 5vw, 4.5rem);
+  row-gap: 1.5rem;
+}
+.lead {
+  grid-column: 1 / span 6;
+  font-size: var(--t-lead);
+  line-height: 1.28;
+  letter-spacing: -0.02em;
+  max-width: 26ch;
+}
+.introBody {
+  grid-column: 7 / span 5;
+  color: var(--fg-2);
+  max-width: 44ch;
+  padding-top: 0.35rem;
+}
+
+/* ---------- Translation table ---------- */
+
+.table {
+  margin-top: clamp(4rem, 8vw, 7rem);
+}
+
+.tableHead,
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 3.2fr) minmax(0, 2fr) minmax(0, 3.6fr) minmax(0, 3.2fr);
+  column-gap: var(--col-gap);
+  align-items: baseline;
+}
+
+.tableHead {
+  font-family: var(--font-mono);
+  font-size: var(--t-mono);
+  color: var(--fg-3);
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.row {
+  position: relative;
+  padding-block: clamp(1.1rem, 2.2vw, 1.9rem);
+  border-bottom: 1px solid var(--line);
+}
+
+.from,
+.to {
+  font-size: clamp(1.6rem, 0.9rem + 2.6vw, 3.6rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  opacity: 0;
+  transform: translate3d(0, 0.35em, 0);
+  transition:
+    opacity 800ms var(--ease-out),
+    transform 900ms var(--ease-out);
+}
+.from {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--fg-2);
+}
+.to {
+  font-weight: 500;
+  transition-delay: 650ms;
+}
+.note {
+  font-size: var(--t-small);
+  color: var(--fg-2);
+  max-width: 34ch;
+  opacity: 0;
+  transition: opacity 800ms var(--ease-out) 850ms;
+}
+
+.wire {
+  position: relative;
+  align-self: center;
+  height: 0.75rem;
+}
+.wireLine {
+  position: absolute;
+  left: 0;
+  right: 0.4rem;
+  top: 50%;
+  height: 1px;
+  background: var(--fg);
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 800ms var(--ease-in-out) 200ms;
+}
+.wireLine::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: -3.5px;
+  width: 7px;
+  height: 7px;
+  border-top: 1px solid var(--fg);
+  border-right: 1px solid var(--fg);
+  transform: rotate(45deg);
+}
+.wireUnit {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-top: -0.275rem;
+  background: var(--signal);
+  opacity: 0;
+  transition:
+    left 800ms var(--ease-in-out) 200ms,
+    opacity 200ms var(--ease-out) 150ms;
+}
+
+:global(.is-in).row .from,
+:global(.is-in).row .to {
+  opacity: 1;
+  transform: none;
+}
+:global(.is-in).row .note {
+  opacity: 1;
+}
+:global(.is-in).row .wireLine {
+  transform: scaleX(1);
+}
+:global(.is-in).row .wireUnit {
+  opacity: 1;
+  left: calc(100% - 1.6rem);
+}
+
+.row:hover .wireUnit {
+  animation: hop 520ms var(--ease-out);
+}
+@keyframes hop {
+  40% {
+    transform: translate3d(0, -0.7rem, 0) scale(0.9, 1.15);
+  }
+  80% {
+    transform: translate3d(0, 0, 0) scale(1.2, 0.8);
+  }
+}
+
+/* ---------- Rules & Now ---------- */
+
+.nowWrap {
+  margin-top: clamp(6rem, 12vw, 11rem);
+}
+
+.split {
+  row-gap: 5rem;
+}
+
+.rules {
+  grid-column: 1 / span 6;
+}
+.now {
+  grid-column: 8 / span 5;
+}
+
+.ruleList {
+  margin-top: 2rem;
+  counter-reset: rule;
+}
+.rule {
+  display: grid;
+  grid-template-columns: 3.5rem 1fr;
+  align-items: baseline;
+  padding-block: 1.15rem;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--t-h3);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  font-weight: 450;
+}
+.ruleNum {
+  font-family: var(--font-mono);
+  font-size: var(--t-mono);
+  letter-spacing: 0;
+  color: var(--signal-deep);
+}
+
+.nowList {
+  margin-top: 2rem;
+}
+.nowRow {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 1rem;
+  padding-block: 0.95rem;
+  border-bottom: 1px solid var(--line);
+}
+.nowRow dt {
+  font-family: var(--font-mono);
+  font-size: var(--t-mono);
+  color: var(--fg-3);
+  padding-top: 0.25em;
+}
+.nowRow dd {
+  font-size: var(--t-body);
+}
+
+@media (max-width: 1000px) {
+  .tableHead,
+  .row {
+    grid-template-columns: minmax(0, 1fr) 4rem minmax(0, 1fr);
+  }
+  .noteHead {
+    display: none;
+  }
+  .note {
+    grid-column: 1 / -1;
+    margin-top: 0.75rem;
+  }
+  .rules,
+  .now {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .lead,
+  .introBody {
+    grid-column: 1 / -1;
+  }
+  .tableHead,
+  .row {
+    grid-template-columns: minmax(0, 1fr) 2.5rem minmax(0, 1fr);
+    column-gap: 0.6rem;
+  }
+  .from,
+  .to {
+    font-size: clamp(1.3rem, 6vw, 2rem);
+  }
+  .wireUnit {
+    width: 0.45rem;
+    height: 0.45rem;
+  }
+  :global(.is-in).row .wireUnit {
+    left: calc(100% - 1.2rem);
+  }
+  .nowRow {
+    grid-template-columns: 6.5rem 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .from,
+  .to,
+  .note {
+    opacity: 1;
+    transform: none;
+  }
+  .wireLine {
+    transform: none;
+  }
+  .wireUnit {
+    opacity: 1;
+    left: calc(100% - 1.6rem);
+  }
+}
