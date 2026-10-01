@@ -1,6 +1,11 @@
-import { useRef } from 'react';
-import { useCanvasLoop } from '../lib/useCanvasLoop';
+import { useRef, useState } from 'react';
+import { useCanvasLoop, wakeCanvas } from '../lib/useCanvasLoop';
+import { prefersReducedMotion } from '../lib/useReducedMotion';
+import { Experiment } from './Experiment';
 import { usePointer } from './usePointer';
+
+/** Keeps the 10px end weights fully inside the canvas. */
+const EDGE = 7;
 
 interface Pt {
   x: number;
@@ -10,14 +15,29 @@ interface Pt {
   pinned: boolean;
 }
 
-/** Verlet integration: store where a point was, infer where it's going. Ropes for free. */
+/**
+ * Simulation: verlet integration stores where a point was and infers where it's going.
+ * The exposed number is how many constraint passes the solver gets each frame —
+ * fewer is cheaper and stretchier, which is the trade every physics budget makes.
+ */
 export default function Rope() {
   const ref = useRef<HTMLCanvasElement>(null);
   const pointer = usePointer(ref);
+  const [passes, setPasses] = useState(14);
+  const passesRef = useRef(passes);
+  const kick = useRef(false);
+  const changePasses = (v: number) => {
+    setPasses(v);
+    passesRef.current = v;
+    // Nudge the ropes, so the difference is visible straight away.
+    kick.current = true;
+    wakeCanvas(ref.current);
+  };
 
   useCanvasLoop(ref, () => {
     let ropes: { pts: Pt[]; seg: number }[] = [];
     let grabbed: Pt | null = null;
+    const reduced = prefersReducedMotion();
 
     return {
       setup({ width, height }) {
@@ -28,8 +48,9 @@ export default function Rope() {
           const len = height * lengths[i]!;
           const seg = len / n;
           const pts: Pt[] = [];
-          // Start each rope swung out to one side, so it settles into place on first view.
-          const swing = (i - 1) * 0.5 + 0.9;
+          // Start each rope swung out to one side, so it settles into place on first view
+          // (hanging straight down if motion is reduced).
+          const swing = reduced ? 0 : (i - 1) * 0.5 + 0.9;
           for (let k = 0; k <= n; k++) {
             const x = width * ax + Math.sin(swing) * k * seg;
             const y = 14 + Math.cos(swing) * k * seg;
@@ -54,6 +75,11 @@ export default function Rope() {
             }
         }
         if (!p.down) grabbed = null;
+
+        if (kick.current) {
+          kick.current = false;
+          for (const r of ropes) r.pts.forEach((pt, k) => !pt.pinned && (pt.px -= (k / r.pts.length) * 7));
+        }
 
         let energy = 0;
         for (const r of ropes) {
@@ -81,7 +107,7 @@ export default function Rope() {
             grabbed.x = p.x;
             grabbed.y = p.y;
           }
-          for (let it = 0; it < 14; it++) {
+          for (let it = 0; it < passesRef.current; it++) {
             for (let k = 0; k < r.pts.length - 1; k++) {
               const a = r.pts[k]!;
               const b = r.pts[k + 1]!;
@@ -98,8 +124,8 @@ export default function Rope() {
             }
           }
           for (const pt of r.pts) {
-            pt.x = Math.max(2, Math.min(width - 2, pt.x));
-            pt.y = Math.min(height - 2, pt.y);
+            pt.x = Math.max(EDGE, Math.min(width - EDGE, pt.x));
+            pt.y = Math.min(height - EDGE, pt.y);
           }
         }
 
@@ -121,5 +147,19 @@ export default function Rope() {
     };
   });
 
-  return <canvas ref={ref} aria-hidden="true" style={{ touchAction: 'pan-y', cursor: 'grab' }} />;
+  return (
+    <Experiment
+      param={{
+        label: 'Solver passes per frame',
+        value: passes,
+        min: 1,
+        max: 30,
+        step: 1,
+        format: (v) => `${v}`,
+        onChange: changePasses,
+      }}
+    >
+      <canvas ref={ref} aria-hidden="true" style={{ touchAction: 'pan-y', cursor: 'grab' }} />
+    </Experiment>
+  );
 }

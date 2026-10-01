@@ -75,7 +75,7 @@ h1,
 h2,
 h3,
 h4 {
-  font-weight: 500;
+  font-weight: var(--w-medium);
   text-wrap: balance;
 }
 
@@ -163,6 +163,18 @@ canvas {
   opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
+}
+
+/*
+ * Without JavaScript the prerendered page is still a page you can read: nothing waits to be
+ * revealed. Only reveal states are released here; section-specific ones live in their modules.
+ */
+html:not(.js) :is([data-reveal], .split .wi) {
+  opacity: 1 !important;
+  transform: none !important;
+}
+html:not(.js) .rule {
+  transform: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

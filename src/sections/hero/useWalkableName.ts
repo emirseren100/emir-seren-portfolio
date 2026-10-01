@@ -16,12 +16,19 @@ const UNIT_RATIO = 0.056;
 
 export type HeroMessage = 'tittle' | 'fall' | 'end' | null;
 
+/** Where the square first stands, in stage pixels — the hint is laid out against it. */
+export interface Spawn {
+  left: number;
+  top: number;
+  unit: number;
+}
+
 interface Options {
   stageRef: RefObject<HTMLElement | null>;
   nameRef: RefObject<HTMLElement | null>;
   playerRef: RefObject<HTMLElement | null>;
-  /** Changes whenever the letter markup changes (e.g. one line ↔ two lines). */
-  layoutKey: string;
+  /** How many visual lines the name currently occupies; the level is rebuilt when it changes. */
+  lineCount: number;
   ready: boolean;
   reduced: boolean;
   /** Fit the name to this fraction of the viewport height at most. */
@@ -37,12 +44,13 @@ export function useWalkableName({
   stageRef,
   nameRef,
   playerRef,
-  layoutKey,
+  lineCount,
   ready,
   reduced,
   maxHeightRatio,
 }: Options) {
   const [guides, setGuides] = useState<LineGuides[]>([]);
+  const [spawn, setSpawn] = useState<Spawn | null>(null);
   const [message, setMessage] = useState<HeroMessage>(null);
   const [active, setActive] = useState(false);
   const api = useRef<{
@@ -117,10 +125,13 @@ export function useWalkableName({
       name!.style.fontSize = '100px';
       kern(100, cs.fontFamily, cs.fontWeight);
       const lines = Array.from(name!.querySelectorAll<HTMLElement>('[data-line-el]'));
-      const widest = Math.max(...lines.map((l) => l.offsetWidth), 1);
+      // Stacked: fit the widest word. Side by side: fit the whole name.
+      const inner = name!.querySelector<HTMLElement>('[data-name-inner]');
+      const widest =
+        lineCount > 1 ? Math.max(...lines.map((l) => l.offsetWidth), 1) : Math.max(inner?.offsetWidth ?? 0, 1);
       const avail = stage!.clientWidth;
       const byWidth = (avail / widest) * 100;
-      const byHeight = (window.innerHeight * maxHeightRatio) / (0.82 * lines.length);
+      const byHeight = (window.innerHeight * maxHeightRatio) / (0.82 * lineCount);
       const size = Math.max(40, Math.min(byWidth, byHeight));
       name!.style.fontSize = `${size.toFixed(2)}px`;
       return { size, family: cs.fontFamily, weight: cs.fontWeight };
@@ -134,7 +145,10 @@ export function useWalkableName({
       solids = toSolids(boxes, unit, stage!.clientWidth);
       player!.style.width = `${unit}px`;
       player!.style.height = `${unit}px`;
-      setGuides(result.guides);
+      // Side by side, both words share one baseline: draw that set of guides once.
+      setGuides(result.guides.filter((g, i, all) => all.findIndex((o) => Math.abs(o.baseline - g.baseline) < 1) === i));
+      const first = boxes[0];
+      if (first) setSpawn({ left: (first.left + first.right) / 2 - unit / 2, top: first.top - unit, unit });
     }
 
     const firstBox = () => boxes[0];
@@ -333,7 +347,7 @@ export function useWalkableName({
       api.current = null;
       letters.forEach((l) => (l.style.marginRight = ''));
     };
-  }, [stageRef, nameRef, playerRef, layoutKey, ready, reduced, maxHeightRatio]);
+  }, [stageRef, nameRef, playerRef, lineCount, ready, reduced, maxHeightRatio]);
 
   const jumpToward = useCallback((x: number | null) => api.current?.jumpToward(x), []);
   const setKey = useCallback(
@@ -342,5 +356,5 @@ export function useWalkableName({
   );
   const release = useCallback(() => api.current?.release(), []);
 
-  return { guides, message, active, setActive, jumpToward, setKey, release };
+  return { guides, spawn, message, active, setActive, jumpToward, setKey, release };
 }

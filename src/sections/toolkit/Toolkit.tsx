@@ -9,13 +9,9 @@ export function Toolkit() {
   return (
     <section id="toolkit" data-theme="paper" data-chapter="toolkit" className={styles.section}>
       <div className="wrap">
-        <SectionHead index="03.3" label="Toolkit" aside="Honest about where each one stands" />
+        <SectionHead index="02.3" label="Toolkit" aside="Sorted by how well I know them" />
 
-        <SplitWords
-          as="h2"
-          className={styles.title}
-          text="No skill bars. *Just where things actually are.*"
-        />
+        <SplitWords as="h2" className={styles.title} text="What I use, what I’m learning, what’s next." />
 
         <div className={styles.columns}>
           {toolkit.map((g, gi) => (

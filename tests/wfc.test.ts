@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { TILES, mulberry32, solve } from '../src/lib/wfc';
+import { TILES, mulberry32, solve, weightsWithSpace } from '../src/lib/wfc';
 
 describe('wave function collapse', () => {
   it('fills every cell with edges that agree', () => {
@@ -27,5 +27,18 @@ describe('wave function collapse', () => {
       expect(TILES[g.result[y * g.cols]!]!.sockets[3]).toBe(0);
       expect(TILES[g.result[y * g.cols + g.cols - 1]!]!.sockets[1]).toBe(0);
     }
+  });
+
+  it('opens up or fills in as the empty tile gets more or less weight', () => {
+    const empties = (space: number) => {
+      let n = 0;
+      for (let seed = 1; seed <= 8; seed++) {
+        const g = solve(12, 8, mulberry32(seed), 10, weightsWithSpace(space));
+        expect(g.contradiction).toBe(false);
+        n += g.result.filter((id) => id === 0).length;
+      }
+      return n;
+    };
+    expect(empties(6)).toBeGreaterThan(empties(0.3));
   });
 });

@@ -23,7 +23,7 @@
 .name {
   margin-top: clamp(2.5rem, 8vw, 7rem);
   font-size: clamp(4.5rem, 0.5rem + 17vw, 20rem);
-  font-weight: 540;
+  font-weight: var(--w-display);
   line-height: 0.82;
   letter-spacing: -0.06em;
   margin-left: -0.06em;
@@ -128,7 +128,7 @@
 .blockLabel {
   font-family: var(--font-mono);
   font-size: var(--t-mono);
-  font-weight: 400;
+  font-weight: var(--w-regular);
   color: var(--fg-2);
 }
 
@@ -182,7 +182,7 @@
   font-size: var(--t-lead);
   line-height: 1.15;
   letter-spacing: -0.025em;
-  font-weight: 500;
+  font-weight: var(--w-medium);
   color: var(--fg);
 }
 
@@ -232,7 +232,7 @@
 }
 .nextName {
   font-size: clamp(3.5rem, 0.5rem + 13vw, 15rem);
-  font-weight: 540;
+  font-weight: var(--w-display);
   line-height: 0.85;
   letter-spacing: -0.06em;
   transition:

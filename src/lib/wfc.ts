@@ -33,6 +33,7 @@ const BASE: Array<[Sockets, number]> = [
 ];
 
 export const TILES: Tile[] = BASE.map(([sockets, weight], id) => ({ id, sockets, weight }));
+const DEFAULT_WEIGHTS = TILES.map((t) => t.weight);
 
 export interface Grid {
   cols: number;
@@ -94,8 +95,17 @@ function propagate(g: Grid, start: number) {
   }
 }
 
+/** Per-tile weights with the empty tile scaled: more open space, or a denser network. */
+export function weightsWithSpace(space: number): number[] {
+  return TILES.map((t) => (t.id === 0 ? t.weight * space : t.weight));
+}
+
 /** Collapses one cell. Returns false when the grid is finished (or stuck). */
-export function collapseStep(g: Grid, rand: () => number = Math.random): boolean {
+export function collapseStep(
+  g: Grid,
+  rand: () => number = Math.random,
+  weights: readonly number[] = DEFAULT_WEIGHTS,
+): boolean {
   if (g.contradiction) return false;
   let best = -1;
   let bestEntropy = Infinity;
@@ -109,11 +119,11 @@ export function collapseStep(g: Grid, rand: () => number = Math.random): boolean
   }
   if (best < 0) return false;
   const opts = g.options[best]!;
-  const total = opts.reduce((s, id) => s + TILES[id]!.weight, 0);
+  const total = opts.reduce((s, id) => s + (weights[id] ?? 0), 0);
   let pick = rand() * total;
   let chosen = opts[0]!;
   for (const id of opts) {
-    pick -= TILES[id]!.weight;
+    pick -= weights[id] ?? 0;
     if (pick <= 0) {
       chosen = id;
       break;
@@ -126,11 +136,17 @@ export function collapseStep(g: Grid, rand: () => number = Math.random): boolean
   return true;
 }
 
-export function solve(cols: number, rows: number, rand: () => number = Math.random, attempts = 10): Grid {
+export function solve(
+  cols: number,
+  rows: number,
+  rand: () => number = Math.random,
+  attempts = 10,
+  weights?: readonly number[],
+): Grid {
   let g = createGrid(cols, rows);
   for (let a = 0; a < attempts; a++) {
     g = createGrid(cols, rows);
-    while (collapseStep(g, rand));
+    while (collapseStep(g, rand, weights));
     if (!g.contradiction) return g;
   }
   return g;

@@ -5,7 +5,7 @@
 .title {
   margin-top: clamp(2.5rem, 6vw, 5rem);
   font-size: var(--t-h1);
-  font-weight: 500;
+  font-weight: var(--w-medium);
   line-height: 0.9;
   letter-spacing: -0.055em;
   max-width: 11ch;
@@ -71,12 +71,12 @@
 .from {
   font-family: var(--font-serif);
   font-style: italic;
-  font-weight: 400;
+  font-weight: var(--w-regular);
   letter-spacing: -0.02em;
   color: var(--fg-2);
 }
 .to {
-  font-weight: 500;
+  font-weight: var(--w-medium);
   transition-delay: 650ms;
 }
 .note {
@@ -175,24 +175,26 @@
 
 .ruleList {
   margin-top: 2rem;
-  counter-reset: rule;
+  font-size: var(--t-h3);
+  line-height: 1.22;
+  letter-spacing: -0.03em;
+  font-weight: var(--w-book);
+  text-wrap: pretty;
 }
 .rule {
-  display: grid;
-  grid-template-columns: 3.5rem 1fr;
-  align-items: baseline;
-  padding-block: 1.15rem;
-  border-bottom: 1px solid var(--line);
-  font-size: var(--t-h3);
-  line-height: 1.12;
-  letter-spacing: -0.03em;
-  font-weight: 450;
+  display: inline;
+}
+.rule + .rule::before {
+  content: ' ';
 }
 .ruleNum {
+  display: inline-block;
+  margin-right: 0.45em;
   font-family: var(--font-mono);
-  font-size: var(--t-mono);
+  font-size: var(--t-micro);
   letter-spacing: 0;
   color: var(--signal-deep);
+  vertical-align: 0.55em;
 }
 
 .nowList {
@@ -273,4 +275,16 @@
     opacity: 1;
     left: calc(100% - 1.6rem);
   }
+}
+
+:global(html:not(.js)) :is(.from, .to, .note) {
+  opacity: 1;
+  transform: none;
+}
+:global(html:not(.js)) .wireLine {
+  transform: none;
+}
+:global(html:not(.js)) .wireUnit {
+  opacity: 1;
+  left: calc(100% - 1.6rem);
 }

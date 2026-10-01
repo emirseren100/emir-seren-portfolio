@@ -5,7 +5,7 @@
 .title {
   margin-top: clamp(2rem, 5vw, 4rem);
   font-size: var(--t-h2);
-  font-weight: 480;
+  font-weight: var(--w-medium);
   line-height: 0.98;
   letter-spacing: -0.045em;
   max-width: 16ch;
@@ -41,7 +41,7 @@
 .groupName {
   font-family: var(--font-serif);
   font-style: italic;
-  font-weight: 400;
+  font-weight: var(--w-regular);
   font-size: var(--t-h3);
   line-height: 1.05;
   letter-spacing: -0.02em;

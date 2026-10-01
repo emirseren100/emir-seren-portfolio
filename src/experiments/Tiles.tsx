@@ -1,12 +1,23 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useCanvasLoop, wakeCanvas } from '../lib/useCanvasLoop';
 import { prefersReducedMotion } from '../lib/useReducedMotion';
-import { TILES, collapseStep, createGrid, solve, type Grid } from '../lib/wfc';
+import { TILES, collapseStep, createGrid, solve, weightsWithSpace, type Grid } from '../lib/wfc';
+import { Experiment } from './Experiment';
 
-/** Wave function collapse, one cell at a time. Click for a new board. */
-export default function Tiles({ buttonClassName }: { buttonClassName?: string }) {
+/**
+ * Constraints: wave function collapse, one cell at a time. Every edge has to agree with its
+ * neighbour; the exposed number is how much the solver favours empty space over pipe.
+ */
+export default function Tiles() {
   const ref = useRef<HTMLCanvasElement>(null);
   const restart = useRef<() => void>(() => {});
+  const [space, setSpace] = useState(1);
+  const weights = useRef(weightsWithSpace(space));
+  const changeSpace = (v: number) => {
+    setSpace(v);
+    weights.current = weightsWithSpace(v);
+    restart.current();
+  };
 
   useCanvasLoop(ref, () => {
     let grid: Grid = createGrid(1, 1);
@@ -23,7 +34,7 @@ export default function Tiles({ buttonClassName }: { buttonClassName?: string })
       const rows = Math.max(3, Math.floor((height - 16) / cell));
       ox = (width - cols * cell) / 2;
       oy = (height - rows * cell) / 2;
-      grid = reduced ? solve(cols, rows) : createGrid(cols, rows);
+      grid = reduced ? solve(cols, rows, Math.random, 10, weights.current) : createGrid(cols, rows);
       doneAt = 0;
     };
 
@@ -41,7 +52,7 @@ export default function Tiles({ buttonClassName }: { buttonClassName?: string })
       frame({ ctx, width, height }, _dt, t) {
         if (!reduced && !doneAt && t - lastStep > 16) {
           for (let k = 0; k < 2; k++) {
-            if (!collapseStep(grid)) {
+            if (!collapseStep(grid, Math.random, weights.current)) {
               if (grid.contradiction) fresh(width, height);
               else doneAt = t;
               break;
@@ -101,11 +112,19 @@ export default function Tiles({ buttonClassName }: { buttonClassName?: string })
   });
 
   return (
-    <>
+    <Experiment
+      param={{
+        label: 'Weight of empty tiles',
+        value: space,
+        min: 0.2,
+        max: 6,
+        step: 0.2,
+        format: (v) => `×${v.toFixed(1)}`,
+        onChange: changeSpace,
+      }}
+      action={{ label: 'New board', onClick: () => restart.current() }}
+    >
       <canvas ref={ref} aria-hidden="true" style={{ cursor: 'pointer' }} onClick={() => restart.current()} />
-      <button type="button" className={buttonClassName} onClick={() => restart.current()}>
-        New board
-      </button>
-    </>
+    </Experiment>
   );
 }

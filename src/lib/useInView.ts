@@ -31,6 +31,40 @@ function getPool(rootMargin: string, threshold: number) {
   return pool;
 }
 
+/* ---------- Arrival ---------- */
+
+let instantUntil = 0;
+
+/** Reveal hooks that want to know about arrivals. Other observer consumers are left alone. */
+const settleable = new Map<Element, () => void>();
+
+/**
+ * Call after any jump that lands somewhere new without the visitor scrolling there:
+ * first load, a route change, Back/Forward, an instant anchor jump. Everything already
+ * on screen resolves to its final state immediately instead of animating in from nothing —
+ * including content in the bottom margin the observers normally wait for.
+ */
+export function settleArrival() {
+  if (typeof window === 'undefined') return;
+  instantUntil = performance.now() + 400;
+  requestAnimationFrame(() => {
+    // All reads first, then all writes: one layout instead of one per element.
+    const h = window.innerHeight;
+    const due: Array<() => void> = [];
+    settleable.forEach((settle, el) => {
+      const r = el.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < h && r.width + r.height > 0) due.push(settle);
+    });
+    due.forEach((settle) => settle());
+  });
+}
+
+/** Skip the transition for this element's reveal; the attribute is removed once it has applied. */
+function revealInstantly(el: Element) {
+  el.setAttribute('data-instant', '');
+  window.setTimeout(() => el.removeAttribute('data-instant'), 250);
+}
+
 export function observe(
   el: Element,
   cb: (entry: IntersectionObserverEntry) => void,
@@ -55,15 +89,29 @@ export function useInView<T extends Element>(
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const stop = observe(
+    let shown = false;
+    const enter = () => {
+      if (shown) return;
+      shown = true;
+      if (performance.now() < instantUntil) revealInstantly(el);
+      setInView(true);
+      if (once) stop();
+    };
+    const unobserve = observe(
       el,
       (entry) => {
-        setInView(entry.isIntersecting);
-        if (entry.isIntersecting && once) stop();
+        if (entry.isIntersecting) return enter();
+        shown = false;
+        setInView(false);
       },
       rootMargin,
       threshold,
     );
+    settleable.set(el, enter);
+    const stop = () => {
+      unobserve();
+      settleable.delete(el);
+    };
     return stop;
   }, [ref, once, rootMargin, threshold]);
 

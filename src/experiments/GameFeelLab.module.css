@@ -63,7 +63,7 @@
   border: 1px solid var(--line-strong);
   border-radius: 4px;
   font-family: var(--font-mono);
-  font-size: 1rem;
+  font-size: var(--t-body);
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
@@ -137,43 +137,8 @@
   color: var(--fg-3);
 }
 
-.range {
-  --k: 0;
+.controlRange {
   grid-column: 1 / -1;
-  appearance: none;
-  width: 100%;
-  height: 1.4rem;
-  background: transparent;
-  cursor: ew-resize;
-}
-.range::-webkit-slider-runnable-track {
-  height: 1px;
-  background: linear-gradient(to right, var(--signal) calc(var(--k) * 100%), var(--line-strong) 0);
-}
-.range::-moz-range-track {
-  height: 1px;
-  background: linear-gradient(to right, var(--signal) calc(var(--k) * 100%), var(--line-strong) 0);
-}
-.range::-webkit-slider-thumb {
-  appearance: none;
-  width: 11px;
-  height: 11px;
-  margin-top: -5px;
-  background: var(--fg);
-  border-radius: 0;
-  transition: transform var(--dur-micro) var(--ease-out);
-}
-.range::-moz-range-thumb {
-  width: 11px;
-  height: 11px;
-  background: var(--fg);
-  border: 0;
-  border-radius: 0;
-}
-.range:hover::-webkit-slider-thumb,
-.range:active::-webkit-slider-thumb {
-  transform: scale(1.35);
-  background: var(--signal);
 }
 
 .toggle {
@@ -238,6 +203,6 @@
     grid-template-columns: 1fr;
   }
   .overlay {
-    font-size: 0.625rem;
+    font-size: var(--t-mono);
   }
 }

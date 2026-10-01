@@ -87,7 +87,7 @@ export const translation = [
 ];
 
 export const rules = [
-  'Make it work. Make it honest. Then make it fast.',
+  'Make it work. Make it clear. Then make it fast.',
   'Every state gets designed: empty, loading, error, done.',
   'Motion should explain something, or it should go.',
   'Name things for the next person. Usually that’s me.',
@@ -97,8 +97,6 @@ export const now = [
   { k: 'Studying', v: 'Digital Game Design, at university.' },
   { k: 'Building', v: 'ScoutLab, toward a first public version.' },
   { k: 'Learning', v: 'Backend depth: databases, auth, testing, deployment.' },
-  { k: 'Using', v: 'AI tools every day — and reading every line they write.' },
-  { k: 'Looking for', v: 'An internship or junior role where craft is taken seriously.' },
 ];
 
 export const toolkit = [

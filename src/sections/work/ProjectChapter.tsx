@@ -15,6 +15,7 @@ interface Props {
 export function ProjectChapter({ project: p, layout, visual }: Props) {
   const to = `/work/${p.slug}`;
   const curtain = { ink: p.ink, label: `${p.index} — ${p.name}` };
+  const status = p.meta.find((m) => m.k === 'Status')?.v;
 
   return (
     <article
@@ -28,7 +29,7 @@ export function ProjectChapter({ project: p, layout, visual }: Props) {
         <h3 id={`project-${p.slug}`} className={styles.name}>
           <Link to={to} {...curtain} className={styles.nameLink}>
             <span className={styles.nameUnit} aria-hidden="true" />
-            <SplitWords text={p.name} self={false} />
+            <SplitWords text={p.name} self={false} camel />
           </Link>
         </h3>
         <p className={styles.kind}>{p.kind}</p>
@@ -50,19 +51,22 @@ export function ProjectChapter({ project: p, layout, visual }: Props) {
             {p.brief}
           </Reveal>
           <Reveal as="dl" className={styles.meta} delay={320}>
-            {p.meta.map((m) => (
-              <div key={m.k}>
-                <dt>{m.k}</dt>
-                <dd>{m.v}</dd>
-              </div>
-            ))}
+            {/* Role and type are the same for every project, so the Work intro says them once. */}
+            <div>
+              <dt>Status</dt>
+              <dd>{status}</dd>
+            </div>
+            <div>
+              <dt>Key decision</dt>
+              <dd>{p.decisions[0]?.title}</dd>
+            </div>
             <div>
               <dt>Stack</dt>
               <dd>{p.stack.join(', ')}</dd>
             </div>
           </Reveal>
           <Reveal delay={400}>
-            <Link to={to} {...curtain} className={styles.cta}>
+            <Link to={to} {...curtain} className={`hit ${styles.cta}`}>
               <span>Read the case study</span>
               <span className={styles.ctaArrow} aria-hidden="true">
                 <span />

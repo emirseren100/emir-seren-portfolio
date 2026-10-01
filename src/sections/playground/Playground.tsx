@@ -29,10 +29,10 @@ export function Playground() {
   return (
     <section id="playground" data-theme="dark" data-chapter="playground" className={styles.section}>
       <div className="wrap">
-        <SectionHead index="04" label="Playground" aside="Experiments, small on purpose" />
+        <SectionHead index="03" label="Playground" aside="Experiments, small on purpose" />
 
         <div className={`grid ${styles.intro}`}>
-          <SplitWords as="h2" className={styles.title} text="Small things, *built properly.*" />
+          <SplitWords as="h2" className={styles.title} text="Rules, weight and timing." />
           <Reveal as="p" className={styles.lead} delay={200}>
             Game design taught me that how something feels is a set of numbers someone chose. This is where I
             choose them on purpose.
@@ -70,33 +70,35 @@ export function Playground() {
             {
               idx: 'E.01',
               title: 'Flock',
-              note: 'Three rules — keep apart, match speed, stay close — and a pointer they avoid.',
+              concept: 'Emergence',
+              note: 'No bird knows the shape of the flock. Each follows three local rules — keep apart, match speed, stay close — and the flock appears anyway. Change how far they can see and watch it split or merge.',
               hint: 'Move through it',
               el: <Flock />,
             },
             {
               idx: 'E.02',
               title: 'Rope',
-              note: 'Verlet integration: remember where a point was, and its velocity takes care of itself.',
-              hint: 'Grab the ends',
+              concept: 'Simulation',
+              note: 'Verlet integration: a point remembers where it was, and its velocity follows. The rope is only as stiff as the passes the solver gets each frame — cheaper means stretchier.',
+              hint: 'Grab an end',
               el: <Rope />,
             },
             {
               idx: 'E.03',
               title: 'Tiles',
-              note: 'Wave function collapse, the small version. Every edge has to agree with its neighbour.',
+              concept: 'Constraints',
+              note: 'Wave function collapse, the small version. Every edge has to agree with its neighbour, so a handful of rules produces a layout nobody drew — the way many procedural levels begin.',
               hint: 'Watch it solve',
-              el: <Tiles buttonClassName={styles.itemAction} />,
+              el: <Tiles />,
             },
           ].map((e, i) => (
             <Reveal as="figure" key={e.title} className={styles.item} delay={i * 110} style={{ '--i': i } as CSSProperties}>
-              <LazyMount className={styles.canvasBox} fallback={null}>
-                {e.el}
-              </LazyMount>
+              <LazyMount fallback={<div className={styles.expFallback} />}>{e.el}</LazyMount>
               <figcaption className={styles.caption}>
                 <span className={styles.itemIdx}>{e.idx}</span>
                 <span className={styles.itemTitle}>{e.title}</span>
                 <span className={styles.itemHint}>{e.hint}</span>
+                <span className={styles.itemConcept}>{e.concept}</span>
                 <span className={styles.itemNote}>{e.note}</span>
               </figcaption>
             </Reveal>

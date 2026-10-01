@@ -21,15 +21,11 @@ export function Work() {
   return (
     <section id="work" data-theme="dark" data-chapter="work" className={styles.section}>
       <div className="wrap">
-        <SectionHead index="02" label="Selected work" aside="Four projects" />
-        <SplitWords
-          as="h2"
-          className={styles.title}
-          text="All personal. All still *teaching me something.*"
-        />
+        <SectionHead index="01" label="Selected work" aside="Interactive mockups" />
+        <SplitWords as="h2" className={styles.title} text="Three projects and a playground." />
         <Reveal as="p" className={styles.intro} delay={250}>
-          No clients yet, no invented numbers. These are the things I build to get better, and each one is
-          interactive — go ahead and use them.
+          All three are personal projects. I designed and built each one, front end to back end, and the
+          interfaces below run on sample data — use them.
         </Reveal>
 
         {projects.map((p, i) => (
@@ -50,9 +46,9 @@ export function Work() {
           </Reveal>
           <div className={`grid ${styles.teaserBody}`}>
             <Reveal className={styles.teaserText} delay={150}>
-              <p className={styles.tagline}>Built small, kept honest.</p>
+              <p className={styles.tagline}>{playgroundProject.tagline}</p>
               <p className={styles.brief}>{playgroundProject.brief}</p>
-              <Link to="#playground" className={styles.cta}>
+              <Link to="#playground" className={`hit ${styles.cta}`}>
                 <span>Go to the playground</span>
                 <span className={`${styles.ctaArrow} ${styles.ctaDown}`} aria-hidden="true">
                   <span />

@@ -7,7 +7,7 @@
 .title {
   margin-top: 1.5rem;
   font-size: var(--t-mega);
-  font-weight: 540;
+  font-weight: var(--w-display);
   line-height: 0.82;
   letter-spacing: -0.06em;
 }

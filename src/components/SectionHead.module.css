@@ -31,3 +31,7 @@
   align-self: center;
   --d: 120ms;
 }
+
+:global(html:not(.js)) :is(.index, .label, .aside) {
+  opacity: 1;
+}

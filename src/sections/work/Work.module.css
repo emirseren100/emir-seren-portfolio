@@ -5,7 +5,7 @@
 .title {
   margin-top: clamp(2.5rem, 6vw, 5rem);
   font-size: var(--t-h2);
-  font-weight: 480;
+  font-weight: var(--w-medium);
   line-height: 0.98;
   letter-spacing: -0.045em;
   max-width: 14ch;
@@ -46,7 +46,7 @@
 .name {
   grid-column: 2 / span 8;
   font-size: var(--t-h1);
-  font-weight: 520;
+  font-weight: var(--w-display);
   line-height: 0.86;
   letter-spacing: -0.055em;
   margin-left: -0.05em;
@@ -141,7 +141,7 @@
 }
 .meta > div {
   display: grid;
-  grid-template-columns: 5.5rem 1fr;
+  grid-template-columns: 7rem 1fr;
   gap: 1rem;
   padding-block: 0.6rem;
   border-bottom: 1px solid var(--line);
@@ -163,7 +163,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.9rem;
-  font-weight: 500;
+  font-weight: var(--w-medium);
   font-size: var(--t-body);
   padding-block: 0.4rem;
 }
@@ -332,4 +332,8 @@
     border-top: 1px solid var(--line);
     height: 260px;
   }
+}
+
+:global(html:not(.js)) .kind {
+  opacity: 1;
 }

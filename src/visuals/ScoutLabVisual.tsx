@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type CSSProperties } from 'react';
-import { useAutoplay } from '../lib/useAutoplay';
+import { useAutoplay, wrap } from '../lib/useAutoplay';
 import { useTweenedArray } from '../lib/tween';
 import { Frame } from './Frame';
 import styles from './ScoutLabVisual.module.css';
@@ -42,11 +42,12 @@ function polygon(values: number[], r: number, c: number) {
 
 export function ScoutLabVisual({ large = false }: { large?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
-  const { tick, takeOver } = useAutoplay(ref, 3200);
-  const [picked, setPicked] = useState<number | null>(null);
-  const active = picked ?? tick % PLAYERS.length;
-  const [compare, setCompare] = useState(0);
-  const compareIdx = picked === null ? (active + PLAYERS.length - 1) % PLAYERS.length : compare;
+  const { position, setPosition, paused, pause, resume } = useAutoplay(ref, 3200);
+  const n = PLAYERS.length;
+  const active = wrap(position, n);
+  // While cycling, compare with the previous player; once someone picks, with whoever they left.
+  const [compare, setCompare] = useState<number | null>(null);
+  const compareIdx = compare ?? wrap(active - 1, n);
 
   const player = PLAYERS[active]!;
   const other = PLAYERS[compareIdx]!;
@@ -59,9 +60,15 @@ export function ScoutLabVisual({ large = false }: { large?: boolean }) {
   const r = size / 2 - 46;
 
   const select = (i: number) => {
-    takeOver();
+    pause();
     if (i !== active) setCompare(active);
-    setPicked(i);
+    setPosition(i);
+  };
+
+  const togglePlayback = () => {
+    if (!paused) return pause();
+    setCompare(null);
+    resume();
   };
 
   return (
@@ -70,6 +77,7 @@ export function ScoutLabVisual({ large = false }: { large?: boolean }) {
         app="ScoutLab"
         context="Shortlist · Central midfield · U23"
         right={<span>per 90 · percentile vs role</span>}
+        playback={{ paused, onToggle: togglePlayback }}
         label="ScoutLab interface: a shortlist of four anonymised midfielders and a radar chart comparing them."
         className={`${styles.frame} ${large ? styles.large : ''}`}
       >
@@ -156,7 +164,10 @@ export function ScoutLabVisual({ large = false }: { large?: boolean }) {
               <span className={styles.boxL} />
               <span className={styles.boxR} />
             </div>
-            <p className={styles.caption}>Touch map · last 10 matches</p>
+            <p className={styles.caption}>
+              Touch map · last 10 matches · attacking <span aria-hidden="true">→</span>
+              <span className="sr-only">left to right</span>
+            </p>
           </div>
         </div>
       </Frame>

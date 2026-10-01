@@ -9,14 +9,13 @@ export function About() {
   return (
     <section id="about" data-theme="paper" data-chapter="about" className={styles.section}>
       <div className="wrap">
-        <SectionHead index="03" label="About" aside="Game design → software" />
+        <SectionHead index="02" label="About" aside="Game design → software" />
 
         <SplitWords as="h2" className={styles.title} text="Translation, *not a restart.*" />
 
         <div className={`grid ${styles.intro}`}>
           <Reveal as="p" className={styles.lead} delay={150}>
-            I study Digital Game Design, and I’m moving into full-stack development — seriously, not as a
-            side quest.
+            I study Digital Game Design, and I’m moving into full-stack development as my main quest.
           </Reveal>
           <Reveal as="p" className={styles.introBody} delay={250}>
             People sometimes ask whether that makes the degree a detour. It doesn’t. Almost everything I
@@ -64,19 +63,20 @@ export function About() {
       <div id="now" data-chapter="now" className={`wrap ${styles.nowWrap}`}>
         <div className={`grid ${styles.split}`}>
           <div className={styles.rules}>
-            <SectionHead index="03.1" label="Rules I work by" />
-            <ol className={styles.ruleList}>
+            <SectionHead index="02.1" label="Rules I work by" />
+            {/* Run-in statements rather than another ruled list: the one place on paper that reads as prose. */}
+            <Reveal as="ol" className={styles.ruleList}>
               {rules.map((r, i) => (
-                <Reveal as="li" key={r} delay={i * 90} className={styles.rule}>
+                <li key={r} className={styles.rule}>
                   <span className={styles.ruleNum}>R{String(i + 1).padStart(2, '0')}</span>
-                  <span>{r}</span>
-                </Reveal>
+                  {r}
+                </li>
               ))}
-            </ol>
+            </Reveal>
           </div>
 
           <div className={styles.now}>
-            <SectionHead index="03.2" label="Now" aside={site.season} />
+            <SectionHead index="02.2" label="Now" aside={site.season} />
             <dl className={styles.nowList}>
               {now.map((n, i) => (
                 <Reveal key={n.k} delay={i * 80} className={styles.nowRow}>

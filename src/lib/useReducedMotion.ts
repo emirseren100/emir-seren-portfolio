@@ -15,7 +15,7 @@ export function useReducedMotion(): boolean {
   return useSyncExternalStore(subscribe, prefersReducedMotion, () => false);
 }
 
-const COARSE = '(pointer: coarse)';
+export const COARSE = '(pointer: coarse)';
 function subscribeCoarse(cb: () => void) {
   const mq = window.matchMedia(COARSE);
   mq.addEventListener('change', cb);

@@ -37,7 +37,7 @@
 .mono {
   font-family: var(--font-mono);
   font-size: var(--t-mono);
-  font-weight: 400;
+  font-weight: var(--w-regular);
   letter-spacing: 0.01em;
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
@@ -54,20 +54,20 @@
 .serif {
   font-family: var(--font-serif);
   font-style: italic;
-  font-weight: 400;
+  font-weight: var(--w-regular);
   letter-spacing: -0.01em;
 }
 
 em {
   font-family: var(--font-serif);
   font-style: italic;
-  font-weight: 400;
+  font-weight: var(--w-regular);
   letter-spacing: -0.015em;
 }
 
 .display {
   font-family: var(--font-sans);
-  font-weight: 500;
+  font-weight: var(--w-medium);
   letter-spacing: -0.045em;
   line-height: 0.9;
 }
@@ -76,7 +76,75 @@ em {
   font-size: var(--t-lead);
   line-height: 1.3;
   letter-spacing: -0.015em;
-  font-weight: 400;
+  font-weight: var(--w-regular);
+}
+
+/* ---------- Hit areas ---------- */
+
+/* Small controls get a ~44px invisible touch target; what you see doesn't change. */
+.hit {
+  position: relative;
+}
+.hit::after {
+  content: '';
+  position: absolute;
+  inset: -12px var(--hit-x, -10px);
+}
+
+/* ---------- Sliders ---------- */
+
+/* One slider for the whole site. Set --k (0–1) for the filled part; themes swap the two colours. */
+.range {
+  --k: 0;
+  --range-fill: var(--signal);
+  --range-thumb: var(--fg);
+  appearance: none;
+  width: 100%;
+  height: 1.4rem;
+  background: transparent;
+  cursor: ew-resize;
+}
+.range::-webkit-slider-runnable-track {
+  height: 1px;
+  background: linear-gradient(to right, var(--range-fill) calc(var(--k) * 100%), var(--line-strong) 0);
+}
+.range::-moz-range-track {
+  height: 1px;
+  background: linear-gradient(to right, var(--range-fill) calc(var(--k) * 100%), var(--line-strong) 0);
+}
+.range::-webkit-slider-thumb {
+  appearance: none;
+  width: 11px;
+  height: 11px;
+  margin-top: -5px;
+  background: var(--range-thumb);
+  border-radius: 0;
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+.range::-moz-range-thumb {
+  width: 11px;
+  height: 11px;
+  background: var(--range-thumb);
+  border: 0;
+  border-radius: 0;
+}
+.range:hover::-webkit-slider-thumb,
+.range:active::-webkit-slider-thumb {
+  transform: scale(1.35);
+  background: var(--range-fill);
+}
+.range:focus-visible {
+  outline-offset: 2px;
+}
+
+/* Fingers need a taller track than a cursor does. */
+@media (pointer: coarse) {
+  .range {
+    height: 2.75rem;
+  }
+}
+[data-input='touch'] .range {
+  height: 2.75rem;
 }
 
 /* ---------- Links ---------- */
@@ -103,6 +171,11 @@ em {
 .u-link--on:hover {
   background-size: 0% 1px;
   background-position: 100% 100%;
+}
+
+/* Optical join for CamelCase names set at tight display tracking. */
+.camel {
+  margin-left: 0.045em;
 }
 
 /* ---------- Reveal system ---------- */
@@ -161,6 +234,13 @@ em {
 .is-in .rule,
 .rule.is-in {
   transform: none;
+}
+
+/* Content that was already on screen when you arrived doesn't perform for you. */
+[data-instant],
+[data-instant] * {
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

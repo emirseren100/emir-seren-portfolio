@@ -5,3 +5,4 @@ dist
 scripts/out
 coverage
 *.tsbuildinfo
+dist-ssr

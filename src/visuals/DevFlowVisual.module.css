@@ -2,13 +2,20 @@
   --ink: var(--ink-devflow);
 }
 
-.kbd {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  padding: 0.1rem 0.35rem;
-  border: 1px solid var(--line-strong);
-  border-radius: 3px;
-  color: var(--fg-2);
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.live::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--ink);
+}
+.live[data-paused='true']::before {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--fg-3);
 }
 
 .flow {
@@ -53,7 +60,7 @@
 
 .nodeLabel {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: var(--t-mono);
   color: var(--fg-3);
   transition: color 400ms var(--ease-out);
 }
@@ -81,14 +88,14 @@
 .cardLane {
   position: relative;
   margin-top: 1.25rem;
-  height: 4.25rem;
+  min-height: 4.25rem;
 }
 
 .card {
-  position: absolute;
   --cw: min(15rem, 46%);
-  left: calc((100% - var(--cw)) * var(--s) / 3);
-  top: 0;
+  /* In flow (not absolute), so a long title can wrap instead of being cut off. */
+  position: relative;
+  margin-left: calc((100% - var(--cw)) * var(--s) / 3);
   width: var(--cw);
   display: grid;
   grid-template-columns: auto 1fr;
@@ -98,25 +105,23 @@
   border: 1px solid var(--line-strong);
   border-left: 2px solid var(--ink);
   border-radius: 3px;
-  transition: left 800ms var(--ease-out);
+  transition: margin-left 800ms var(--ease-out);
   animation: cardIn 600ms var(--ease-out);
 }
 .cardId {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: var(--t-mono);
   color: var(--ink);
 }
 .cardTitle {
-  font-size: 0.8125rem;
+  font-size: var(--t-small);
+  line-height: 1.3;
   color: var(--paper-0);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .cardState {
   grid-column: 2;
   font-family: var(--font-mono);
-  font-size: 0.625rem;
+  font-size: var(--t-mono);
   color: var(--fg-3);
 }
 
@@ -132,18 +137,13 @@
   right: 1.25rem;
   bottom: 1.25rem;
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: var(--t-mono);
   color: var(--fg-2);
-  padding: 0.35rem 0.6rem;
-  border: 1px solid var(--line-strong);
-  border-radius: 3px;
-  transition:
-    color var(--dur-micro) var(--ease-out),
-    border-color var(--dur-micro) var(--ease-out);
+  /* Secondary on purpose: the flow moves by itself; this is for stepping through while paused. */
+  transition: color var(--dur-micro) var(--ease-out);
 }
 .advance:hover {
   color: var(--paper-0);
-  border-color: var(--ink);
 }
 .advance span {
   display: inline-block;
@@ -156,7 +156,7 @@
 .log {
   padding: 0.9rem 1.25rem 1.1rem;
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: var(--t-mono);
 }
 .logHead {
   display: flex;
@@ -167,7 +167,7 @@
 
 .event {
   display: grid;
-  grid-template-columns: 3rem 2.5rem 9.5rem 1fr;
+  grid-template-columns: 3.1rem 2rem 2.6rem 10.5rem 1fr;
   gap: 0.5rem;
   padding-block: 0.45rem;
   border-top: 1px solid var(--line);
@@ -183,6 +183,12 @@
 }
 .event:nth-child(5) {
   opacity: 0.3;
+}
+.source {
+  color: var(--fg-3);
+}
+.source[data-source='you'] {
+  color: var(--paper-0);
 }
 .evTask {
   color: var(--ink);
@@ -201,7 +207,7 @@
 
 @media (max-width: 640px) {
   .event {
-    grid-template-columns: 2.8rem 2.2rem 1fr;
+    grid-template-columns: 2.9rem 1.9rem 2.4rem 1fr;
   }
   .evDetail {
     display: none;

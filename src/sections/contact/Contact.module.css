@@ -13,7 +13,7 @@
 .title {
   margin-top: clamp(3rem, 8vw, 7rem);
   font-size: var(--t-mega);
-  font-weight: 540;
+  font-weight: var(--w-display);
   line-height: 0.82;
   letter-spacing: -0.06em;
   white-space: nowrap;
@@ -134,7 +134,7 @@
   font-size: clamp(1.5rem, 0.8rem + 2.6vw, 3.25rem);
   letter-spacing: -0.035em;
   line-height: 1.1;
-  font-weight: 500;
+  font-weight: var(--w-medium);
   background-image: linear-gradient(var(--signal), var(--signal));
   background-size: 100% 2px;
   background-position: 0 100%;
@@ -237,4 +237,12 @@
   .hop {
     animation: none;
   }
+}
+
+:global(html:not(.js)) .lineInner {
+  transform: none;
+}
+:global(html:not(.js)) .unit {
+  opacity: 1;
+  transform: none;
 }

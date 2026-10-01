@@ -43,15 +43,30 @@
   --font-serif: 'Newsreader Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   --font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
-  /* Fluid type scale (min @ 360px → max @ 1600px) */
-  --t-mono: clamp(0.6875rem, 0.66rem + 0.12vw, 0.78rem);
-  --t-small: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+  /*
+   * Fluid type scale (min @ 360px → max @ 1600px).
+   * Below 20px there are only four steps:
+   *   micro — decorative indices, key caps, superscripts (never meaning-bearing alone)
+   *   mono  — labels, captions and data in the monospace voice
+   *   small — secondary text, navigation, interface text inside the mockups
+   *   body  — reading text
+   */
+  --t-micro: 0.6875rem;
+  --t-mono: clamp(0.75rem, 0.73rem + 0.08vw, 0.8125rem);
+  --t-small: clamp(0.875rem, 0.86rem + 0.08vw, 0.9375rem);
   --t-body: clamp(1rem, 0.96rem + 0.18vw, 1.125rem);
   --t-lead: clamp(1.25rem, 1.08rem + 0.75vw, 1.875rem);
   --t-h3: clamp(1.5rem, 1.25rem + 1.1vw, 2.5rem);
   --t-h2: clamp(2.5rem, 1.6rem + 4vw, 6.25rem);
   --t-h1: clamp(3.25rem, 1.6rem + 7.5vw, 10.5rem);
   --t-mega: clamp(5.5rem, 0.5rem + 21vw, 24rem);
+
+  /* Weights (Bricolage is variable; these are the only stops in use) */
+  --w-regular: 400;
+  --w-book: 450; /* large running text: practice, rules */
+  --w-medium: 500; /* emphasis, headings, interface labels */
+  --w-display: 540; /* display names and finales */
+  --w-name: 560; /* the hero name and the wordmark */
 
   /* Space */
   --gutter: clamp(1rem, 0.6rem + 1.8vw, 2.5rem);

@@ -11,7 +11,7 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 
 function Routes() {
   const { path } = useRouter();
-  if (path === '/' || path === '/index.html') return <Home />;
+  if (path === '/') return <Home />;
   const slug = matchWork(path);
   const project = slug ? getProject(slug) : undefined;
   return (
@@ -21,7 +21,7 @@ function Routes() {
   );
 }
 
-export function App() {
+export function App({ initialPath }: { initialPath?: string }) {
   // Fetch the case-study chunk while the browser is idle, so the curtain never lifts on an empty page.
   useEffect(() => {
     const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1500));
@@ -29,7 +29,7 @@ export function App() {
   }, []);
 
   return (
-    <RouterProvider>
+    <RouterProvider initialPath={initialPath}>
       <a className="skip-link" href="#main">
         Skip to content
       </a>

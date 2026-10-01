@@ -11,6 +11,7 @@ import {
   type MouseEvent,
   type ReactNode,
 } from 'react';
+import { settleArrival } from './useInView';
 import { prefersReducedMotion } from './useReducedMotion';
 
 /**
@@ -45,29 +46,50 @@ const REVEAL_MS = 760;
 
 const wait = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms));
 
+/** `/work/devflow/` and `/index.html` are the same pages as `/work/devflow` and `/`. */
+export const normalisePath = (path: string) => path.replace(/\/index\.html$/, '/').replace(/(.)\/+$/, '$1');
+
 function splitHref(to: string): { path: string; hash: string } {
   const url = new URL(to, window.location.href);
-  return { path: url.pathname, hash: url.hash.slice(1) };
+  return { path: normalisePath(url.pathname), hash: url.hash.slice(1) };
 }
 
 export function scrollToId(id: string, smooth = true) {
   const el = document.getElementById(id);
   if (!el) return false;
-  el.scrollIntoView({ behavior: smooth && !prefersReducedMotion() ? 'smooth' : 'instant' });
+  const animate = smooth && !prefersReducedMotion();
+  el.scrollIntoView({ behavior: animate ? 'smooth' : 'instant' });
+  if (animate) afterScroll(settleArrival);
+  else settleArrival();
   return true;
 }
 
-export function RouterProvider({ children }: { children: ReactNode }) {
-  const [path, setPath] = useState(() => window.location.pathname);
+/** Runs once a smooth scroll has come to rest (with a fallback where `scrollend` is missing). */
+function afterScroll(fn: () => void) {
+  let done = false;
+  const finish = () => {
+    if (done) return;
+    done = true;
+    window.removeEventListener('scrollend', finish);
+    fn();
+  };
+  window.addEventListener('scrollend', finish);
+  window.setTimeout(finish, 1200);
+}
+
+export function RouterProvider({ children, initialPath }: { children: ReactNode; initialPath?: string }) {
+  // `initialPath` lets the page be prerendered on the server, where there is no window.
+  const [path, setPath] = useState(() => normalisePath(initialPath ?? window.location.pathname));
   const [curtain, setCurtain] = useState<Curtain>({ phase: 'idle', ink: 'var(--ink-2)', label: '' });
   const pending = useRef<{ hash: string; scrollY: number | null } | null>(null);
   const busy = useRef(false);
 
   useEffect(() => {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    // Initial deep link to a section.
+    // Initial deep link to a section; otherwise just settle whatever is on screen.
     const hash = window.location.hash.slice(1);
     if (hash) requestAnimationFrame(() => scrollToId(hash, false));
+    else settleArrival();
   }, []);
 
   const transition = useCallback(async (apply: () => void, ink: string, label: string) => {
@@ -92,14 +114,16 @@ export function RouterProvider({ children }: { children: ReactNode }) {
   const navigate = useCallback(
     (to: string, opts?: NavigateOptions) => {
       const { path: nextPath, hash } = splitHref(to);
-      const samePage = nextPath === window.location.pathname;
+      const samePage = nextPath === normalisePath(window.location.pathname);
 
       if (samePage) {
         if (hash) {
           history.replaceState(history.state, '', `${nextPath}#${hash}`);
           scrollToId(hash);
         } else {
-          window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'instant' : 'smooth' });
+          const animate = !prefersReducedMotion();
+          window.scrollTo({ top: 0, behavior: animate ? 'smooth' : 'instant' });
+          if (animate) afterScroll(settleArrival);
         }
         return;
       }
@@ -118,11 +142,12 @@ export function RouterProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const onPop = (e: PopStateEvent) => {
-      const nextPath = window.location.pathname;
+      const nextPath = normalisePath(window.location.pathname);
       const scrollY = typeof e.state?.scrollY === 'number' ? e.state.scrollY : 0;
       const hash = window.location.hash.slice(1);
       if (nextPath === path) {
-        if (hash) scrollToId(hash);
+        // Back/Forward between sections (or a typed #fragment) is an arrival, not a journey.
+        if (hash) scrollToId(hash, false);
         return;
       }
       void transition(() => {
@@ -141,6 +166,7 @@ export function RouterProvider({ children }: { children: ReactNode }) {
     pending.current = null;
     if (p.hash && scrollToId(p.hash, false)) return;
     window.scrollTo({ top: p.scrollY ?? 0, behavior: 'instant' });
+    settleArrival();
   }, [path]);
 
   const value = useMemo(() => ({ path, navigate, curtain }), [path, navigate, curtain]);

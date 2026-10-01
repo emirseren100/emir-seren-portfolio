@@ -120,7 +120,7 @@ export function Nav() {
         data-hidden={hidden && !open ? 'true' : 'false'}
       >
         <div className={`wrap ${styles.bar}`}>
-          <Link to="/" className={styles.mark} aria-label={`${site.name}, back to the start`}>
+          <Link to="/" className={`hit ${styles.mark}`} aria-label={`${site.name}, back to the start`}>
             <span className={styles.markUnit} aria-hidden="true" />
             <span className={styles.markName}>{site.name}</span>
           </Link>
@@ -139,7 +139,7 @@ export function Nav() {
                   <Link
                     to={href(n.id)}
                     data-id={n.id}
-                    className={styles.link}
+                    className={`hit ${styles.link}`}
                     aria-current={activeId === n.id ? 'true' : undefined}
                   >
                     <span className={styles.linkIdx}>{chapterNumber(n.id)}</span>
@@ -211,11 +211,11 @@ export function Nav() {
             ))}
           </ul>
           <div className={styles.menuFoot}>
-            <a className="mono" href={`mailto:${site.email}`}>
+            <a className="mono hit" href={`mailto:${site.email}`}>
               {site.email}
             </a>
             {site.links.map((l) => (
-              <a key={l.href} className="mono" href={l.href} target="_blank" rel="noreferrer">
+              <a key={l.href} className="mono hit" href={l.href} target="_blank" rel="noreferrer">
                 {l.label} ↗
               </a>
             ))}
@@ -233,13 +233,13 @@ function chapterOwner(chapter: string): string {
 }
 
 const CHAPTER_NUMBERS: Record<string, string> = {
-  practice: '01',
-  work: '02',
-  about: '03',
-  toolkit: '03',
-  now: '03',
-  playground: '04',
-  contact: '05',
+  practice: '00',
+  work: '01',
+  about: '02',
+  toolkit: '02',
+  now: '02',
+  playground: '03',
+  contact: '04',
 };
 
 function chapterNumber(chapter: string): string {

@@ -1,6 +1,6 @@
 import { useEffect, type CSSProperties } from 'react';
 import { Reveal } from '../components/Reveal';
-import { SplitWords } from '../components/SplitWords';
+import { opticalCamel, SplitWords } from '../components/SplitWords';
 import { projects, type Project } from '../content/projects';
 import { site } from '../content/site';
 import { Link } from '../lib/router';
@@ -30,7 +30,7 @@ export default function CaseStudy({ project: p }: { project: Project }) {
       <header data-theme="dark" data-chapter="case" className={styles.header}>
         <div className="wrap">
           <div className={styles.crumbs}>
-            <Link to="/#work" className={`u-link ${styles.back}`}>
+            <Link to="/#work" className={`u-link hit ${styles.back}`}>
               ← Index
             </Link>
             <span className={styles.count}>
@@ -39,7 +39,7 @@ export default function CaseStudy({ project: p }: { project: Project }) {
           </div>
 
           <h1 className={styles.name}>
-            <SplitWords text={p.name} />
+            <SplitWords text={p.name} camel />
           </h1>
 
           <div className={`grid ${styles.intro}`}>
@@ -131,16 +131,16 @@ export default function CaseStudy({ project: p }: { project: Project }) {
           <p className={styles.nextLabel}>Next case study</p>
           <Link to={`/work/${next.slug}`} ink={next.ink} label={`${next.index} — ${next.name}`} className={styles.nextLink}>
             <span className={styles.nextIdx}>{next.index}</span>
-            <span className={styles.nextName}>{next.name}</span>
+            <span className={styles.nextName}>{opticalCamel(next.name)}</span>
             <span className={styles.nextArrow} aria-hidden="true">
               →
             </span>
           </Link>
           <div className={styles.footRow}>
-            <Link to="/#work" className="u-link">
+            <Link to="/#work" className="u-link hit">
               Back to all work
             </Link>
-            <Link to="/#contact" className="u-link">
+            <Link to="/#contact" className="u-link hit">
               Get in touch
             </Link>
           </div>

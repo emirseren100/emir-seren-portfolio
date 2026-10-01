@@ -49,8 +49,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  font-weight: 560;
-  font-size: 0.95rem;
+  font-weight: var(--w-name);
+  font-size: var(--t-small);
   letter-spacing: -0.02em;
 }
 .markUnit {
@@ -104,18 +104,19 @@
 }
 
 .link {
+  --hit-x: -0.45rem;
   position: relative;
   display: inline-flex;
   align-items: baseline;
   gap: 0.35rem;
-  font-size: 0.95rem;
+  font-size: var(--t-small);
   letter-spacing: -0.01em;
   padding-block: 0.4rem;
   transition: opacity var(--dur-micro) var(--ease-out);
 }
 .linkIdx {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: var(--t-micro);
   color: var(--nav-dim);
   transform: translateY(-0.35em);
 }
@@ -148,7 +149,7 @@
   gap: 0.75rem;
   height: 2.75rem;
   padding-inline: 0.25rem;
-  font-size: 0.95rem;
+  font-size: var(--t-small);
 }
 
 .menuLabel {
@@ -254,7 +255,7 @@
 }
 .menuWord {
   font-size: clamp(2.75rem, 13vw, 5rem);
-  font-weight: 500;
+  font-weight: var(--w-medium);
   letter-spacing: -0.045em;
   line-height: 1;
 }

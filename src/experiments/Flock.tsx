@@ -1,6 +1,7 @@
-import { useRef } from 'react';
-import { useCanvasLoop } from '../lib/useCanvasLoop';
+import { useRef, useState } from 'react';
+import { useCanvasLoop, wakeCanvas } from '../lib/useCanvasLoop';
 import { prefersReducedMotion } from '../lib/useReducedMotion';
+import { Experiment } from './Experiment';
 import { usePointer } from './usePointer';
 
 interface Boid {
@@ -10,10 +11,23 @@ interface Boid {
   vy: number;
 }
 
-/** Three rules — separation, alignment, cohesion — and a pointer they'd rather avoid. */
+/**
+ * Emergence: three local rules — separation, alignment, cohesion — and no leader.
+ * The one number exposed is how far each bird can see; the shape of the flock follows from it.
+ */
 export default function Flock() {
   const ref = useRef<HTMLCanvasElement>(null);
   const pointer = usePointer(ref);
+  const [vision, setVision] = useState(50);
+  const visionRef = useRef(vision);
+  // With reduced motion the flock holds still, except briefly after you change something.
+  const awakeUntil = useRef(0);
+  const changeVision = (v: number) => {
+    setVision(v);
+    visionRef.current = v;
+    awakeUntil.current = performance.now() + 3000;
+    wakeCanvas(ref.current);
+  };
 
   useCanvasLoop(ref, () => {
     let boids: Boid[] = [];
@@ -29,7 +43,9 @@ export default function Flock() {
       },
       frame({ ctx, width, height }, dt) {
         const p = pointer.current;
-        const step = reduced && !p.active ? 0 : dt;
+        const still = reduced && !p.active && performance.now() > awakeUntil.current;
+        const step = still ? 0 : dt;
+        const see = visionRef.current * visionRef.current;
         const maxSpeed = 95;
         for (const b of boids) {
           let sx = 0, sy = 0, ax = 0, ay = 0, cx = 0, cy = 0, n = 0;
@@ -38,7 +54,7 @@ export default function Flock() {
             const dx = o.x - b.x;
             const dy = o.y - b.y;
             const d2 = dx * dx + dy * dy;
-            if (d2 > 50 * 50) continue;
+            if (d2 > see) continue;
             n++;
             ax += o.vx;
             ay += o.vy;
@@ -86,10 +102,24 @@ export default function Flock() {
           ctx.lineTo(b.x, b.y);
           ctx.stroke();
         }
-        return !reduced || p.active;
+        return !still;
       },
     };
   });
 
-  return <canvas ref={ref} aria-hidden="true" style={{ touchAction: 'pan-y' }} />;
+  return (
+    <Experiment
+      param={{
+        label: 'How far each bird sees',
+        value: vision,
+        min: 12,
+        max: 140,
+        step: 2,
+        format: (v) => `${v}px`,
+        onChange: changeVision,
+      }}
+    >
+      <canvas ref={ref} aria-hidden="true" style={{ touchAction: 'pan-y' }} />
+    </Experiment>
+  );
 }

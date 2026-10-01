@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import { feelStore, useFeel } from '../lib/feelStore';
 import {
   DEFAULT_FEEL,
@@ -11,7 +11,9 @@ import {
   type Input,
   type Solid,
 } from '../lib/platformer';
+import { rangeFill } from '../lib/rangeFill';
 import { useCanvasLoop, wakeCanvas } from '../lib/useCanvasLoop';
+import { useInputModality, useTouchSeen } from '../lib/useInputModality';
 import { useCoarsePointer } from '../lib/useReducedMotion';
 import styles from './GameFeelLab.module.css';
 
@@ -60,6 +62,13 @@ const CONTROLS: Control[] = [
   { key: 'squash', label: 'Squash & stretch', min: 0, max: 1, step: 0.05, unit: '', fmt: (v) => `${Math.round(v * 100)}%` },
 ];
 
+const SPOKEN_UNITS: Record<string, string> = {
+  u: 'units',
+  'u/s': 'units per second',
+  'u/s²': 'units per second squared',
+  ms: 'milliseconds',
+};
+
 const KEYS: Record<string, 'left' | 'right' | 'jump' | 'reset'> = {
   ArrowLeft: 'left',
   a: 'left',
@@ -93,6 +102,11 @@ export default function GameFeelLab() {
   const [arcs, setArcs] = useState(true);
   const [focused, setFocused] = useState(false);
   const coarse = useCoarsePointer();
+  const modality = useInputModality();
+  // On-screen buttons whenever touch has been used, even on a touchscreen laptop. Sticky, so pressing
+  // a key on a pad button can't unmount the button it's holding down.
+  const touchSeen = useTouchSeen();
+  const showPad = coarse || touchSeen;
   const arcsRef = useRef(arcs);
   useEffect(() => {
     arcsRef.current = arcs;
@@ -280,7 +294,11 @@ export default function GameFeelLab() {
           tabIndex={0}
           role="group"
           aria-roledescription="playable demo"
-          aria-label="Game feel lab. Arrow keys or A and D to move, up arrow, W or space to jump, R to reset."
+          aria-label={
+            showPad
+              ? 'Game feel lab. Use the move and jump buttons below the level.'
+              : 'Game feel lab. Arrow keys or A and D move, the up arrow, W or space jumps, R resets.'
+          }
           onKeyDown={onKeyDown}
           onKeyUp={onKeyUp}
           onFocus={() => setFocused(true)}
@@ -298,11 +316,17 @@ export default function GameFeelLab() {
         >
           <canvas ref={canvasRef} className={styles.canvas} aria-hidden="true" />
           <p className={styles.overlay} aria-hidden="true">
-            {focused ? '← → move   ↑ / space jump   R reset' : coarse ? 'Use the buttons below' : 'Click to play'}
+            {focused
+              ? '← → move   ↑ / space jump   R reset'
+              : showPad
+                ? 'Hold the buttons below'
+                : modality === 'keyboard'
+                  ? 'Focus here, then use the arrow keys'
+                  : 'Click to play'}
           </p>
         </div>
 
-        {coarse ? (
+        {showPad ? (
           <div className={styles.pad}>
             <HoldButton label="←" ariaLabel="Move left" onHold={(d) => setKey('left', d)} />
             <HoldButton label="→" ariaLabel="Move right" onHold={(d) => setKey('right', d)} />
@@ -346,9 +370,10 @@ export default function GameFeelLab() {
                   max={c.max}
                   step={c.step}
                   value={v}
+                  aria-valuetext={`${c.fmt ? c.fmt(v) : Math.round(v)} ${SPOKEN_UNITS[c.unit] ?? ''}`.trim()}
                   onChange={(e) => feelStore.set({ [c.key]: Number(e.target.value) })}
-                  className={styles.range}
-                  style={{ '--k': (v - c.min) / (c.max - c.min) } as CSSProperties}
+                  className={`range ${styles.controlRange}`}
+                  style={rangeFill(v, c.min, c.max)}
                 />
               </div>
             );
@@ -391,6 +416,17 @@ function HoldButton({ label, ariaLabel, className, onHold }: HoldButtonProps) {
       onPointerLeave={() => onHold(false)}
       onPointerCancel={() => onHold(false)}
       onContextMenu={(e) => e.preventDefault()}
+      // Enter and Space hold the button too, so the pad isn't touch-only.
+      onKeyDown={(e) => {
+        if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) {
+          e.preventDefault();
+          onHold(true);
+        }
+      }}
+      onKeyUp={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') onHold(false);
+      }}
+      onBlur={() => onHold(false)}
     >
       {label}
     </button>

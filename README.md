@@ -18,7 +18,11 @@ from games quietly — in pacing, feedback and small discoveries — instead of 
 ## Stack
 
 React 19, TypeScript, Vite, CSS Modules. No animation or UI libraries — motion is CSS transitions plus a
-few `requestAnimationFrame` loops that only run while on screen. Fonts are self-hosted via Fontsource:
+few `requestAnimationFrame` loops that only run while on screen.
+
+Every route is **prerendered at build time** (`src/entry-server.tsx` + `scripts/prerender.mjs`), so the
+homepage and case studies ship as real HTML and React hydrates on top. Without JavaScript the page is
+still readable; with it, nothing looks different. Fonts are self-hosted via Fontsource:
 Bricolage Grotesque (display/text), Newsreader italic (accents), Geist Mono (labels).
 
 ## Scripts
@@ -26,7 +30,7 @@ Bricolage Grotesque (display/text), Newsreader italic (accents), Geist Mono (lab
 ```bash
 npm install
 npm run dev        # local dev server
-npm run build      # typecheck + production build into dist/
+npm run build      # typecheck, client build, server bundle, then prerendered HTML into dist/
 npm run preview    # serve the production build
 npm run check      # typecheck, lint, unit tests and build in one go
 
@@ -38,7 +42,8 @@ npm test           # engine, inventory simulation and tile solver tests
 Visual QA helpers (need a Chromium binary; set `CHROMIUM_PATH` if it isn't at `/opt/pw-browsers/chromium`):
 
 ```bash
-npm run qa -- http://localhost:5173        # every route, reduced motion, mobile menu, keyboard order, console errors
+npm run qa -- http://localhost:5173        # routes × reduced motion, 390–2560px + 200% zoom overflow, touch path,
+                                           # keyboard reach, arrival (hash/anchor/Back never lands on hidden content)
 npm run og -- http://localhost:5173/       # regenerate public/og.png from the live hero
 node scripts/shoot.mjs <url> <name> 1440 900   # single screenshot into scripts/out/
 ```
@@ -71,12 +76,15 @@ scripts/        screenshot / QA / OG-image tooling
 
 ## Deploying
 
-It's a static single-page app: deploy `dist/`. Case studies live at `/work/<slug>`, so the host must fall
-back to `index.html` for unknown paths. `vercel.json` and `public/_redirects` (Netlify) already do that.
+Deploy `dist/` to any static host. Each prerendered route has its own `index.html`
+(`/work/scoutlab/index.html`, …); unknown paths must fall back to `/index.html`, where the client renders
+the right page. `vercel.json` and `public/_redirects` (Netlify) already do that.
 
 ## Accessibility notes
 
 - The playable hero only captures keys while it has focus (click it, or use the “The name is walkable”
-  button); Escape or scrolling away hands the keyboard back to the page.
+  button); Escape or scrolling away hands the keyboard back to the page. Its instructions follow the input
+  actually in use — touch, mouse or keyboard — and never mention controls that aren't available.
+- Mockups that update on their own have a pause control, and stop the moment you interact with them.
 - `prefers-reduced-motion` removes reveals, the drop-in intro and autoplaying mockups; everything stays usable.
 - Touch devices get tap-to-jump in the hero and on-screen buttons in the lab.

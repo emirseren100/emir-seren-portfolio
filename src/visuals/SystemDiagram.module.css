@@ -14,7 +14,7 @@
 }
 .link text {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   fill: var(--fg-3);
   opacity: 0;
   transition: opacity 600ms var(--ease-out);
@@ -56,12 +56,12 @@
 .title {
   font-family: var(--font-sans);
   font-size: 15px;
-  font-weight: 560;
+  font-weight: var(--w-name);
   fill: var(--on-paper);
 }
 .field {
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: 12px;
   fill: var(--on-paper-2);
 }
 
@@ -74,4 +74,12 @@
     opacity: 1;
     transform: none;
   }
+}
+
+:global(html:not(.js)) .link line {
+  stroke-dashoffset: 0;
+}
+:global(html:not(.js)) :is(.link text, .box) {
+  opacity: 1;
+  transform: none;
 }

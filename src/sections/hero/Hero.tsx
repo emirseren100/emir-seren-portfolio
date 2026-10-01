@@ -2,9 +2,10 @@ import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, ty
 import { SplitWords } from '../../components/SplitWords';
 import { Link } from '../../lib/router';
 import { fontsReady } from '../../lib/fonts';
+import { useInputModality, type InputModality } from '../../lib/useInputModality';
 import { useMediaQuery } from '../../lib/useMediaQuery';
-import { useCoarsePointer, useReducedMotion } from '../../lib/useReducedMotion';
-import { useWalkableName } from './useWalkableName';
+import { useReducedMotion } from '../../lib/useReducedMotion';
+import { useWalkableName, type HeroMessage } from './useWalkableName';
 import styles from './Hero.module.css';
 
 const NAME = 'Emir Şeren';
@@ -22,6 +23,41 @@ const KEYMAP: Record<string, 'left' | 'right' | 'jump'> = {
   ' ': 'jump',
 };
 
+const Keys = ({ keys }: { keys: string[] }) => (
+  <>
+    {keys.map((k) => (
+      <kbd key={k} className={styles.kbd}>
+        {k}
+      </kbd>
+    ))}
+  </>
+);
+
+/** Instructions follow the input actually in use, and never promise a control that isn't there. */
+function hintFor(message: HeroMessage, modality: InputModality, active: boolean) {
+  if (message) return MESSAGES[message];
+  if (modality === 'touch') return 'Tap it to jump. Tap ahead to run.';
+  if (active) {
+    return (
+      <>
+        <Keys keys={['←', '→']} /> move · <Keys keys={['↑']} /> jump · <Keys keys={['Esc']} /> stop
+      </>
+    );
+  }
+  return (
+    <>
+      {modality === 'keyboard' ? (
+        <>
+          Press <Keys keys={['Enter']} />, then
+        </>
+      ) : (
+        'Click it, then'
+      )}{' '}
+      <Keys keys={['←', '→', '↑']} />
+    </>
+  );
+}
+
 const MESSAGES = {
   tittle: 'That’s a tittle — the dot on an i. Well found.',
   fall: 'Out of bounds. Respawning.',
@@ -35,14 +71,15 @@ export function Hero() {
   const playerRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
   const reduced = useReducedMotion();
-  const coarse = useCoarsePointer();
+  const modality = useInputModality();
+  const touch = modality === 'touch';
   const twoLines = useMediaQuery('(max-width: 760px), (max-aspect-ratio: 4/5)');
   const short = useMediaQuery('(max-height: 720px) and (min-width: 761px)');
 
-  const lines = twoLines ? NAME.split(' ') : [NAME];
+  // The markup is the same in both layouts (two word-lines that CSS sets side by side or stacked),
+  // so the prerendered HTML never has to reflow when the browser learns the viewport.
+  const words = NAME.split(' ');
   const heightRatio = twoLines ? 0.5 : short ? 0.3 : 0.36;
-  // Mirrors the fitting script's height limit so the first paint is already the right size.
-  const fitHeight = `${((heightRatio / (0.82 * lines.length)) * 100).toFixed(2)}svh`;
 
   useEffect(() => {
     let alive = true;
@@ -52,11 +89,11 @@ export function Hero() {
     };
   }, []);
 
-  const { guides, message, active, setActive, jumpToward, setKey, release } = useWalkableName({
+  const { guides, spawn, message, active, setActive, jumpToward, setKey, release } = useWalkableName({
     stageRef,
     nameRef,
     playerRef,
-    layoutKey: lines.join('|'),
+    lineCount: twoLines ? 2 : 1,
     ready,
     reduced,
     maxHeightRatio: heightRatio,
@@ -95,7 +132,9 @@ export function Hero() {
     return () => io.disconnect();
   }, [active]);
 
+  // The hint's button lives inside the stage; its own keys and focus aren't game input.
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget) return;
     if (e.key === 'Escape') {
       e.currentTarget.blur();
       return;
@@ -107,6 +146,7 @@ export function Hero() {
   };
 
   const onKeyUp = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget) return;
     const k = KEYMAP[e.key];
     if (!k) return;
     e.preventDefault();
@@ -126,13 +166,17 @@ export function Hero() {
 
   let letterIndex = 0;
 
-  const hint = message
-    ? MESSAGES[message]
-    : active
-      ? 'Playing. Esc to stop.'
-      : coarse
-        ? 'Tap the name to jump. Tap ahead to run.'
-        : 'Click it, then use the arrow keys.';
+  const hint = hintFor(message, modality, active);
+
+  const stageLabel = touch
+    ? 'Playable title. Tap the name to make the square jump, or tap ahead of it to run.'
+    : 'Playable title. Left and right arrow keys move, the up arrow or space jumps, Escape stops.';
+
+  const startPlaying = () => {
+    // On touch there's no keyboard to hand over, so show what a tap does instead.
+    if (touch) jumpToward(null);
+    else stageRef.current?.focus({ preventScroll: true });
+  };
 
   return (
     <section
@@ -140,16 +184,16 @@ export function Hero() {
       id="top"
       data-theme="dark"
       data-chapter="top"
-      className={`${styles.hero} ${ready ? styles.ready : ''} ${active ? styles.active : ''} ${twoLines ? styles.twoLines : ''}`}
-      aria-labelledby="hero-title"
-      style={{ '--fit-h': fitHeight } as CSSProperties}
+      className={`${styles.hero} ${ready ? styles.ready : ''} ${active ? styles.active : ''}`}
     >
       <div className={`wrap ${styles.inner}`}>
         <div className={`grid ${styles.meta}`}>
           <p className={`mono ${styles.metaA}`}>
             Portfolio
             <br />
-            <span className={styles.dim}>Edition {new Date().getFullYear()}</span>
+            <span className={styles.dim} suppressHydrationWarning>
+              Edition {new Date().getFullYear()}
+            </span>
           </p>
           <p className={`mono ${styles.metaB}`}>
             Digital Game Design student
@@ -170,29 +214,6 @@ export function Hero() {
             className={styles.statement}
             text="Game design taught me how things *should feel.* Software engineering is teaching me how to make them *hold.*"
           />
-
-          <div className={styles.play}>
-            <div className={styles.keys} aria-hidden="true">
-              <span className={styles.key}>←</span>
-              <span className={styles.key}>→</span>
-              <span className={styles.key}>↑</span>
-            </div>
-            <div>
-              <p className={styles.playTitle}>
-                <button
-                  type="button"
-                  className={styles.playBtn}
-                  onClick={() => stageRef.current?.focus({ preventScroll: true })}
-                >
-                  The name is walkable.
-                </button>
-              </p>
-              <p className={`mono ${styles.hint}`} aria-live="polite">
-                {hint}
-              </p>
-            </div>
-          </div>
-
         </div>
 
         <div
@@ -201,12 +222,13 @@ export function Hero() {
           tabIndex={0}
           role="group"
           aria-roledescription="mini game"
-          aria-label="Playable title. Use the left and right arrow keys to move, the up arrow or space to jump, and Escape to stop."
+          aria-label={stageLabel}
           onKeyDown={onKeyDown}
           onKeyUp={onKeyUp}
           onPointerDown={onPointerDown}
-          onFocus={() => setActive(true)}
-          onBlur={() => {
+          onFocus={(e) => e.target === e.currentTarget && setActive(true)}
+          onBlur={(e) => {
+            if (e.target !== e.currentTarget) return;
             setActive(false);
             release();
           }}
@@ -234,12 +256,12 @@ export function Hero() {
 
           <h1 ref={nameRef} id="hero-title" className={styles.name}>
             <span className="sr-only">{NAME}</span>
-            <span aria-hidden="true" className={styles.nameInner}>
-              {lines.map((line, li) => (
-                <span key={line} className={styles.line} data-line-el="">
-                  {[...line].map((ch, ci) => {
+            <span aria-hidden="true" className={styles.nameInner} data-name-inner="">
+              {words.map((word, li) => (
+                <span key={word} className={styles.line} data-line-el="">
+                  {li > 0 ? <span className={styles.space} /> : null}
+                  {[...word].map((ch, ci) => {
                     const i = letterIndex++;
-                    if (ch === ' ') return <span key={ci} className={styles.space} />;
                     return (
                       <span key={ci} className={styles.mask}>
                         <span
@@ -263,10 +285,33 @@ export function Hero() {
           <div ref={playerRef} className={styles.player} aria-hidden="true">
             <div className={styles.playerBody} />
           </div>
+
+          {/* The hint stands directly above the square, aligned to its left edge, like a specimen note. */}
+          <div
+            className={styles.hint}
+            data-placed={spawn ? 'true' : 'false'}
+            style={
+              spawn
+                ? ({
+                    left: spawn.left,
+                    top: spawn.top - spawn.unit * 0.45,
+                    maxWidth: `calc(100cqw - ${spawn.left}px - 7rem)`,
+                  } as CSSProperties)
+                : undefined
+            }
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            <button type="button" className={`hit ${styles.playBtn}`} onClick={startPlaying}>
+              The name is walkable.
+            </button>
+            <p className={`mono ${styles.hintText}`} aria-live="polite">
+              {hint}
+            </p>
+          </div>
         </div>
 
         <div className={styles.foot}>
-          <Link className={`mono ${styles.cue}`} to="#practice">
+          <Link className={`mono hit ${styles.cue}`} to="#practice">
             <span>Scroll</span>
             <span className={styles.cueTrack} aria-hidden="true">
               <span className={styles.cueDot} />

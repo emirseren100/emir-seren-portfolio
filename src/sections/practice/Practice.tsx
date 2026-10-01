@@ -30,7 +30,7 @@ export function Practice() {
   return (
     <section id="practice" data-theme="dark" data-chapter="practice" className={styles.section}>
       <div className="wrap">
-        <SectionHead index="01" label="Practice" aside="What I build" />
+        <SectionHead index="00" label="Practice" aside="What I build" />
 
         <div className={`grid ${styles.layout}`}>
           <p ref={bodyRef} className={`split ${styles.body} ${inView ? 'is-in' : ''}`}>
@@ -44,12 +44,8 @@ export function Practice() {
                     <span
                       className={styles.term}
                       data-hot={hot === n}
-                      tabIndex={0}
-                      aria-describedby={`practice-note-${n}`}
                       onPointerEnter={() => setHot(n)}
                       onPointerLeave={() => setHot(null)}
-                      onFocus={() => setHot(n)}
-                      onBlur={() => setHot(null)}
                     >
                       {seg.word}
                       <sup className={styles.sup}>{n + 1}</sup>
@@ -65,7 +61,6 @@ export function Practice() {
               <Reveal
                 as="li"
                 key={n.word}
-                id={`practice-note-${i}`}
                 delay={500 + i * 90}
                 className={styles.note}
                 data-hot={hot === i}

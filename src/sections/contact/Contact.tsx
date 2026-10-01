@@ -25,7 +25,7 @@ export function Contact() {
   return (
     <section id="contact" data-theme="dark" data-chapter="contact" className={styles.section}>
       <div className="wrap">
-        <SectionHead index="05" label="Contact" aside="Open to internships & junior roles" />
+        <SectionHead index="04" label="Contact" />
 
         <h2
           ref={titleRef}
@@ -59,17 +59,17 @@ export function Contact() {
           <Reveal className={styles.reach} delay={420}>
             <p className="label">Write to me</p>
             <div className={styles.emailRow}>
-              <a className={styles.email} href={`mailto:${site.email}`}>
+              <a className={`hit ${styles.email}`} href={`mailto:${site.email}`}>
                 {site.email}
               </a>
-              <button type="button" className={styles.copy} onClick={copy} aria-live="polite">
+              <button type="button" className={`hit ${styles.copy}`} onClick={copy} aria-live="polite">
                 {copied === 'done' ? 'Copied' : copied === 'failed' ? 'Press ⌘C' : 'Copy'}
               </button>
             </div>
             <ul className={styles.links}>
               {site.links.map((l) => (
                 <li key={l.href}>
-                  <a href={l.href} target="_blank" rel="noreferrer" className="u-link">
+                  <a href={l.href} target="_blank" rel="noreferrer" className="u-link hit">
                     {l.label} <span aria-hidden="true">↗</span>
                   </a>
                 </li>
@@ -79,14 +79,14 @@ export function Contact() {
         </div>
 
         <footer className={styles.footer}>
-          <p className={styles.fCol}>
+          <p className={styles.fCol} suppressHydrationWarning>
             © {new Date().getFullYear()} {site.name}
           </p>
           <p className={styles.fCol}>
             Designed and built by hand. Set in Bricolage Grotesque, Newsreader and Geist Mono.
           </p>
           <p className={styles.fCol}>
-            <Link to="#top" className="u-link">
+            <Link to="#top" className="u-link hit">
               Back to the start ↑
             </Link>
           </p>

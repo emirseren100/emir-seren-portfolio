@@ -12,7 +12,7 @@
   font-size: clamp(2rem, 0.9rem + 3.9vw, 5.25rem);
   line-height: 1.04;
   letter-spacing: -0.038em;
-  font-weight: 450;
+  font-weight: var(--w-book);
   text-wrap: pretty;
 }
 
@@ -32,14 +32,10 @@
   color: var(--signal);
   background-image: linear-gradient(var(--signal), var(--signal));
 }
-.term:focus-visible {
-  outline-offset: 6px;
-}
-
 .sup {
   font-family: var(--font-mono);
   font-size: 0.22em;
-  font-weight: 400;
+  font-weight: var(--w-regular);
   letter-spacing: 0;
   vertical-align: top;
   position: relative;

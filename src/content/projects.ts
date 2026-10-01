@@ -34,7 +34,7 @@ export const projects: Project[] = [
     name: 'ScoutLab',
     kind: 'Football scouting & player analysis',
     ink: 'var(--ink-scout)',
-    tagline: 'Compare players by role, not by reputation.',
+    tagline: 'A shortlist you can argue for.',
     brief:
       'A scouting workspace for building a case for a player. Shortlists, role-based radars and notes that live next to the numbers they are about.',
     meta: [
@@ -53,12 +53,12 @@ export const projects: Project[] = [
         body: 'Raw totals reward minutes played. Percentiles within a role tell you whether a number is actually unusual.',
       },
       {
-        title: 'Radar charts, but honest ones',
+        title: 'Fixed axes for every role',
         body: 'Axes are fixed per role and always in the same order, so two shapes can be compared at a glance. No auto-scaling that makes everyone look elite.',
       },
       {
         title: 'Notes are data',
-        body: 'A note can be pinned to a match, a metric or a moment. Opinions sit next to the evidence, not in a separate document that drifts out of date.',
+        body: 'A note can be pinned to a match, a metric or a moment, so an opinion always sits next to the evidence it is about.',
       },
     ],
     system: {
@@ -89,7 +89,7 @@ export const projects: Project[] = [
     name: 'DevFlow',
     kind: 'Developer workflow & productivity',
     ink: 'var(--ink-devflow)',
-    tagline: 'For developers who don’t like workflow tools.',
+    tagline: 'One timeline from idea to merged pull request.',
     brief:
       'DevFlow connects the steps between an idea and a merged pull request — tasks, branches, reviews and notes — on one timeline that mostly updates itself.',
     meta: [
@@ -101,7 +101,7 @@ export const projects: Project[] = [
     problem:
       'My own projects kept stalling in the gaps. A task in one app, a branch name I’d forgotten, review notes buried in a chat. The work itself was fine. The handoffs between steps were not.',
     approach:
-      'Model the work as a flow, not a list. Each task moves through states — idea, building, review, shipped — and every change of state is an event. The interface is just a view over those events.',
+      'Model the work as a flow of states. Each task moves through states — idea, building, review, shipped — and every change of state is an event. The interface is just a view over those events.',
     decisions: [
       {
         title: 'An event log as the source of truth',
@@ -112,7 +112,7 @@ export const projects: Project[] = [
         body: 'Every action has a shortcut and a command-palette entry. The mouse is welcome, but optional.',
       },
       {
-        title: 'Realtime, but calm',
+        title: 'Realtime that stays calm',
         body: 'Updates arrive over WebSockets, and the UI batches them so the screen doesn’t twitch while you are reading it.',
       },
     ],
@@ -157,8 +157,8 @@ export const projects: Project[] = [
       'Stock is never edited directly. Every change is a movement — received, sold, returned, adjusted — and the current level is calculated from them. When a number looks wrong, you can always ask it why.',
     decisions: [
       {
-        title: 'Movements, not totals',
-        body: 'A ledger of movements makes every number explainable and every mistake reversible. Totals are cached, never trusted blindly.',
+        title: 'A ledger of movements',
+        body: 'Every change is recorded, so every number can be explained and every mistake reversed. Totals are cached, never trusted blindly.',
       },
       {
         title: 'Reorder points that explain themselves',
@@ -170,7 +170,7 @@ export const projects: Project[] = [
       },
     ],
     system: {
-      caption: 'On-hand quantity is derived from the movement ledger. Reorder logic reads consumption rate, not a single snapshot.',
+      caption: 'On-hand quantity is derived from the movement ledger. Reorder logic works from the recent consumption rate.',
       entities: [
         { id: 'product', label: 'Product', fields: ['sku', 'name', 'unit'], at: [0, 0] },
         { id: 'movement', label: 'Movement', fields: ['sku', 'qty', 'kind', 'at'], at: [1, 0] },
@@ -186,18 +186,19 @@ export const projects: Project[] = [
       ],
     },
     learned:
-      'Resource-management games teach you to watch rates, not totals. It turns out stockrooms agree.',
+      'Resource-management games teach you to watch the rate of change before the total. Stockrooms work the same way.',
     next: ['Barcode scanning on mobile', 'Supplier purchase orders', 'Multi-location transfers'],
   },
 ];
 
 export const playgroundProject = {
-  index: '04',
+  index: '&',
   name: 'Interactive Playground',
   kind: 'Experiments in motion, physics & game feel',
   ink: 'var(--ink-play)',
+  tagline: 'Where the square came from.',
   brief:
-    'Where ideas go before they are allowed to become projects. Physics toys, game mechanics and interface experiments — built small, and kept honest.',
+    'Where ideas go before they are allowed to become projects: physics, game mechanics and interface experiments — including the engine behind the square at the top of the page.',
 };
 
 export const getProject = (slug: string) => projects.find((p) => p.slug === slug);
