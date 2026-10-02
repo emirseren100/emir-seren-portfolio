@@ -1,4 +1,4 @@
-export type ProjectSlug = 'scoutlab' | 'devflow' | 'stockflow';
+export type ProjectSlug = 'stockflow' | 'devflow' | 'follow-clarity' | 'crypto-ta';
 
 export interface Entity {
   id: string;
@@ -8,6 +8,10 @@ export interface Entity {
   at: [number, number];
 }
 
+/**
+ * Every claim here comes from the project's own repository: its README, code and docs.
+ * `stack` is what the project uses — not a list of Emir's skills. `stackNote` says so per project.
+ */
 export interface Project {
   slug: ProjectSlug;
   index: string;
@@ -18,176 +22,289 @@ export interface Project {
   tagline: string;
   brief: string;
   meta: Array<{ k: string; v: string }>;
+  links: { code: string; live?: string };
   stack: string[];
-  problem: string;
-  approach: string;
-  decisions: Array<{ title: string; body: string }>;
+  stackNote: string;
+  /** What the project does. */
+  does: string;
+  /** Heading for the "why" block; descriptive where no personal motivation is confirmed. */
+  whyLabel: 'Why I built it' | 'About the project';
+  why: string;
   system: { caption: string; entities: Entity[]; links: Array<[string, string, string]> };
+  details: Array<{ title: string; body: string }>;
+  /** What Emir learned (only where he has said so) or what the project explores. */
+  learnedLabel: 'What I learned' | 'What the project explores';
   learned: string;
-  next: string[];
+  limits: string[];
 }
 
 export const projects: Project[] = [
   {
-    slug: 'scoutlab',
+    slug: 'stockflow',
     index: '01',
-    name: 'ScoutLab',
-    kind: 'Football scouting & player analysis',
-    ink: 'var(--ink-scout)',
-    tagline: 'A shortlist you can argue for.',
+    name: 'StockFlow',
+    kind: 'Inventory dashboard · JavaScript practice',
+    ink: 'var(--ink-stock)',
+    tagline: 'The project I practised JavaScript with.',
     brief:
-      'A scouting workspace for building a case for a player. Shortlists, role-based radars and notes that live next to the numbers they are about.',
+      'A small inventory dashboard: add products, change stock with + and −, and search, filter and sort the list. Built with HTML, CSS and plain JavaScript while I was learning the language.',
     meta: [
-      { k: 'Role', v: 'Design & full-stack development' },
-      { k: 'Type', v: 'Personal project' },
-      { k: 'Status', v: 'In active development' },
+      { k: 'Type', v: 'Personal learning project' },
+      { k: 'Status', v: 'Finished' },
     ],
-    stack: ['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'D3'],
-    problem:
-      'Football data is everywhere, but it is scattered. Stats live in one tab, video notes in another, and the actual shortlist lives in someone’s head. I wanted one place where a scout could build an argument — and where someone else could follow it.',
-    approach:
-      'Compare like with like. Every metric is normalised per 90 minutes and shown as a percentile against players in the same role. A full-back is never judged on a striker’s numbers, and every chart answers the same question: compared to whom?',
-    decisions: [
-      {
-        title: 'Percentiles over raw numbers',
-        body: 'Raw totals reward minutes played. Percentiles within a role tell you whether a number is actually unusual.',
-      },
-      {
-        title: 'Fixed axes for every role',
-        body: 'Axes are fixed per role and always in the same order, so two shapes can be compared at a glance. No auto-scaling that makes everyone look elite.',
-      },
-      {
-        title: 'Notes are data',
-        body: 'A note can be pinned to a match, a metric or a moment, so an opinion always sits next to the evidence it is about.',
-      },
-    ],
+    links: { code: 'https://github.com/emirseren100/stockflow' },
+    stack: ['HTML', 'CSS', 'JavaScript', 'LocalStorage'],
+    stackNote: 'No framework, no libraries and no build step: just the three files a browser can open.',
+    does:
+      'StockFlow keeps a list of products and how many of each are in stock. You can add a product, raise or lower its stock, delete it, and find things with a search box, an in-stock / out-of-stock filter and sorting by name or quantity. Three counters at the top update with every change, and the list is saved in the browser.',
+    whyLabel: 'Why I built it',
+    why:
+      'I built it while learning JavaScript, to practise on something that behaves like a real app. An inventory is a small problem with a lot of moving parts: every click changes the data, and the screen has to keep up. It’s an important project for me because it’s where the basics started to connect.',
     system: {
-      caption: 'Core data model. Metrics are stored raw and percentiles are computed per role and season.',
+      caption:
+        'How the code is organised. One array of products is the only source of truth. Every change goes through syncApp(), which saves, updates the counters and redraws the list.',
       entities: [
-        { id: 'player', label: 'Player', fields: ['id', 'name', 'foot', 'born'], at: [0, 0] },
-        { id: 'season', label: 'SeasonStat', fields: ['player_id', 'season', 'minutes'], at: [1, 0] },
-        { id: 'metric', label: 'Metric', fields: ['stat_id', 'key', 'per90'], at: [2, 0] },
-        { id: 'role', label: 'Role', fields: ['id', 'label', 'axes[]'], at: [2, 1] },
-        { id: 'list', label: 'Shortlist', fields: ['id', 'owner', 'role_id'], at: [0, 1] },
-        { id: 'note', label: 'Note', fields: ['target', 'body', 'match_ts'], at: [1, 1] },
+        { id: 'events', label: 'Event listeners', fields: ['+ / − / Delete', 'add form', 'search · filter · sort'], at: [0, 0] },
+        { id: 'products', label: 'products[]', fields: ['id', 'name', 'stock'], at: [1, 0] },
+        { id: 'storage', label: 'localStorage', fields: ['"products"', 'JSON string'], at: [2, 0] },
+        { id: 'sync', label: 'syncApp()', fields: ['saveProducts()', 'updateStats()', 'applyFilters()'], at: [1, 1] },
+        { id: 'render', label: 'renderProducts()', fields: ['filtered list', 'product cards'], at: [2, 1] },
       ],
       links: [
-        ['player', 'season', '1 — n'],
-        ['season', 'metric', '1 — n'],
-        ['metric', 'role', 'ranked in'],
-        ['list', 'player', 'n — n'],
-        ['note', 'player', 'about'],
+        ['events', 'products', 'change'],
+        ['products', 'sync', 'then'],
+        ['sync', 'storage', 'save'],
+        ['sync', 'render', 'redraw'],
       ],
     },
+    details: [
+      {
+        title: 'One array, one sync function',
+        body: 'Every change — plus, minus, delete or add — edits the products array and then calls syncApp(). Saving, the counters and the list all update from the same place, so they can’t drift apart.',
+      },
+      {
+        title: 'Search, filter and sort as one step',
+        body: 'applyFilters() starts from the full list, keeps the names that match the search, applies the stock filter, then sorts what’s left. All three controls call the same function.',
+      },
+      {
+        title: 'Check the input before saving',
+        body: 'The add form rejects an empty name or an invalid quantity with a message, instead of adding a broken product. A new product gets the next free id.',
+      },
+    ],
+    learnedLabel: 'What I learned',
     learned:
-      'Data modelling is design work. Once the schema was right, the interface got simpler — no component library could have done that for me.',
-    next: ['Import from public data sources', 'A match timeline for video notes', 'Shareable scouting reports'],
+      'How to keep data and the screen in sync with plain JavaScript: the DOM, events, state and LocalStorage working together.',
+    limits: [
+      'The data lives in one browser. There are no accounts and no server.',
+      'Stock status is either in stock or out of stock; there are no low-stock levels.',
+      'There’s no live demo yet. The repository has the code and a screenshot.',
+    ],
   },
   {
     slug: 'devflow',
     index: '02',
     name: 'DevFlow',
-    kind: 'Developer workflow & productivity',
+    kind: 'Issue tracker, built with AI tools',
     ink: 'var(--ink-devflow)',
-    tagline: 'One timeline from idea to merged pull request.',
+    tagline: 'What a larger full-stack app looks like.',
     brief:
-      'DevFlow connects the steps between an idea and a merged pull request — tasks, branches, reviews and notes — on one timeline that mostly updates itself.',
+      'An AI-assisted full-stack issue and sprint tracker with projects, roles, authentication, Kanban workflows, comments, activity feeds, testing and deployment.',
     meta: [
-      { k: 'Role', v: 'Design & full-stack development' },
-      { k: 'Type', v: 'Personal project' },
-      { k: 'Status', v: 'Prototype, in use by me' },
+      { k: 'Type', v: 'AI-assisted full-stack exploration' },
+      { k: 'Status', v: 'Live demo on Render' },
     ],
-    stack: ['TypeScript', 'Next.js', 'Node.js', 'PostgreSQL', 'WebSockets'],
-    problem:
-      'My own projects kept stalling in the gaps. A task in one app, a branch name I’d forgotten, review notes buried in a chat. The work itself was fine. The handoffs between steps were not.',
-    approach:
-      'Model the work as a flow of states. Each task moves through states — idea, building, review, shipped — and every change of state is an event. The interface is just a view over those events.',
-    decisions: [
-      {
-        title: 'An event log as the source of truth',
-        body: 'Undo, history and the activity feed come almost for free when nothing is overwritten. Current state is a fold over events.',
-      },
-      {
-        title: 'Keyboard first',
-        body: 'Every action has a shortcut and a command-palette entry. The mouse is welcome, but optional.',
-      },
-      {
-        title: 'Realtime that stays calm',
-        body: 'Updates arrive over WebSockets, and the UI batches them so the screen doesn’t twitch while you are reading it.',
-      },
+    links: { code: 'https://github.com/emirseren100/DevFlow', live: 'https://devflow-902d.onrender.com' },
+    stack: [
+      'React',
+      'TypeScript',
+      'React Router',
+      'TanStack Query',
+      'Node.js',
+      'Express',
+      'PostgreSQL',
+      'Prisma',
+      'Zod',
+      'Vitest',
+      'Docker',
+      'GitHub Actions',
     ],
+    stackNote:
+      'This is the project’s stack, not a list of my skills. Most of it is on my learning path; I can’t build with it on my own yet.',
+    does:
+      'DevFlow is an issue tracker for small software teams. A team creates a workspace with owner, admin and member roles, adds projects and sprints, and files issues — tasks or bugs with a priority, status, assignee and due date, numbered per project like API-1. Issues can be searched, filtered and sorted, moved across a Kanban board and discussed in comments, and an activity feed records what changed.',
+    whyLabel: 'About the project',
+    why:
+      'DevFlow is an AI-assisted exploration of a larger full-stack application: an issue and sprint tracker with a React client, an Express API, a PostgreSQL database, authentication, role-based permissions, tests and deployment. It was built with AI tools, and the stack is the project’s, not a claim of my own mastery.',
     system: {
-      caption: 'Tasks never change in place. Every transition is appended as an event, and views are projections.',
+      caption:
+        'A simplified view of the database schema. On every request the server reads the member’s role from the database before it touches a workspace’s data.',
       entities: [
-        { id: 'task', label: 'Task', fields: ['id', 'title', 'state'], at: [0, 0] },
-        { id: 'event', label: 'Event', fields: ['task_id', 'type', 'at', 'payload'], at: [1, 0] },
-        { id: 'branch', label: 'Branch', fields: ['name', 'task_id', 'head'], at: [2, 0] },
-        { id: 'review', label: 'Review', fields: ['branch', 'status', 'notes'], at: [2, 1] },
-        { id: 'view', label: 'Projection', fields: ['board', 'timeline', 'feed'], at: [0, 1] },
+        { id: 'workspace', label: 'Workspace', fields: ['id', 'name', 'slug'], at: [0, 0] },
+        { id: 'project', label: 'Project', fields: ['key', 'nextIssueNumber'], at: [1, 0] },
+        { id: 'sprint', label: 'Sprint', fields: ['name', 'status', 'start · end'], at: [2, 0] },
+        { id: 'member', label: 'WorkspaceMember', fields: ['userId', 'role'], at: [0, 1] },
+        { id: 'issue', label: 'Issue', fields: ['number', 'type', 'status', 'priority', 'position'], at: [1, 1] },
+        { id: 'comment', label: 'Comment', fields: ['issueId', 'authorId', 'body'], at: [2, 1] },
       ],
       links: [
-        ['task', 'event', '1 — n'],
-        ['event', 'branch', 'mentions'],
-        ['branch', 'review', '1 — n'],
-        ['event', 'view', 'folds into'],
+        ['workspace', 'project', '1 — n'],
+        ['project', 'sprint', '1 — n'],
+        ['workspace', 'member', '1 — n'],
+        ['project', 'issue', '1 — n'],
+        ['sprint', 'issue', '0 — n'],
+        ['issue', 'comment', '1 — n'],
       ],
     },
+    details: [
+      {
+        title: 'Permissions are checked on the server',
+        body: 'Roles are read from the database on every request. Hiding a button in the interface is treated as convenience, never as security.',
+      },
+      {
+        title: 'Issue numbers that can’t collide',
+        body: 'Each project keeps a counter. A new issue takes the next number inside a database transaction, and a unique index on project and number is the final guarantee.',
+      },
+      {
+        title: 'The server decides the board order',
+        body: 'When a card moves, the client only sends where it should go. The server reorders the columns in one transaction and returns the confirmed board.',
+      },
+    ],
+    learnedLabel: 'What the project explores',
     learned:
-      'Designing the task state machine felt exactly like designing game states. Same diagrams, same edge cases, different stakes.',
-    next: ['Git provider webhooks', 'Offline-first sync', 'A weekly review generated from the event log'],
+      'This project explores how the parts of a full-stack app fit together — client, API, database, authentication, tests and deployment — and was built with AI assistance.',
+    limits: [
+      'No realtime updates, notifications or email.',
+      'No password reset or email invitations; members must already have an account.',
+      'There’s no shared demo account. You register your own to try it.',
+      'The demo runs on Render’s free tier, so the first load after a quiet period is slow.',
+    ],
   },
   {
-    slug: 'stockflow',
+    slug: 'follow-clarity',
     index: '03',
-    name: 'StockFlow',
-    kind: 'Inventory & stock management',
-    ink: 'var(--ink-stock)',
-    tagline: 'What do I need to order, and when?',
+    name: 'Follow Clarity',
+    kind: 'Instagram follow analyzer · privacy-first',
+    ink: 'var(--ink-follow)',
+    tagline: 'Your data stays in your browser.',
     brief:
-      'Stock levels, reorder points and suppliers for a small business that has outgrown its spreadsheet. Built around one question, answered clearly.',
+      'Upload your own Instagram data export and see who doesn’t follow you back, who you don’t follow back, and your mutuals. Everything is processed locally — no login, no scraping, no upload.',
     meta: [
-      { k: 'Role', v: 'Design & full-stack development' },
-      { k: 'Type', v: 'Personal project' },
-      { k: 'Status', v: 'Core features complete' },
+      { k: 'Type', v: 'Privacy-first web tool' },
+      { k: 'Status', v: 'Live on Netlify' },
     ],
-    stack: ['React', 'TypeScript', 'Express', 'PostgreSQL', 'Zod'],
-    problem:
-      'Small shops track stock in spreadsheets until the spreadsheet becomes the problem. Counts drift, nobody knows which column is current, and reorders happen when the shelf is already empty.',
-    approach:
-      'Stock is never edited directly. Every change is a movement — received, sold, returned, adjusted — and the current level is calculated from them. When a number looks wrong, you can always ask it why.',
-    decisions: [
-      {
-        title: 'A ledger of movements',
-        body: 'Every change is recorded, so every number can be explained and every mistake reversed. Totals are cached, never trusted blindly.',
-      },
-      {
-        title: 'Reorder points that explain themselves',
-        body: '“Order 40 by Thursday — at the current rate you run out in 6 days.” A sentence beats a red cell.',
-      },
-      {
-        title: 'Validation at the edges',
-        body: 'Zod schemas are shared between the API and the forms, so a bad value is rejected once, with the same message everywhere.',
-      },
-    ],
+    links: {
+      code: 'https://github.com/emirseren100/privacy-first-instagram-follow-analyzer',
+      live: 'https://follow-clarity.netlify.app',
+    },
+    stack: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'JSZip', 'Vitest'],
+    stackNote:
+      'The project’s stack, not my skill list. React and TypeScript are still on my learning path.',
+    does:
+      'Follow Clarity reads the followers and following files from an Instagram data export — the ZIP, or the JSON or HTML files inside it. It compares the two lists and shows who you follow that doesn’t follow you back, who follows you that you don’t follow back, and your mutual follows. Each list can be searched, sorted A–Z or Z–A, copied, exported as CSV, and opened as profile links.',
+    whyLabel: 'Why I built it',
+    why:
+      'The project explores a privacy-first way to analyse an Instagram export: everything runs locally in the browser, using only the data export Instagram already provides — no login, no scraping, no unofficial APIs and no upload to a server.',
     system: {
-      caption: 'On-hand quantity is derived from the movement ledger. Reorder logic works from the recent consumption rate.',
+      caption:
+        'The whole pipeline runs in the browser. There is no backend, no API route and no upload endpoint, so the export has nowhere to go.',
       entities: [
-        { id: 'product', label: 'Product', fields: ['sku', 'name', 'unit'], at: [0, 0] },
-        { id: 'movement', label: 'Movement', fields: ['sku', 'qty', 'kind', 'at'], at: [1, 0] },
-        { id: 'location', label: 'Location', fields: ['id', 'name'], at: [2, 0] },
-        { id: 'supplier', label: 'Supplier', fields: ['id', 'lead_days'], at: [0, 1] },
-        { id: 'rule', label: 'ReorderRule', fields: ['sku', 'min', 'target'], at: [1, 1] },
+        { id: 'file', label: 'Your export', fields: ['.zip', '.json', '.html'], at: [0, 0] },
+        { id: 'parse', label: 'parseInstagramExport()', fields: ['unzip (JSZip)', 'followers / following', 'read usernames'], at: [1, 0] },
+        { id: 'normal', label: 'normalizeUsernames()', fields: ['trim, strip @', 'lowercase', 'dedupe'], at: [2, 0] },
+        { id: 'analyze', label: 'analyzeFollows()', fields: ['difference', 'intersection'], at: [2, 1] },
+        { id: 'results', label: 'Result tabs', fields: ['search · sort', 'copy · CSV'], at: [1, 1] },
       ],
       links: [
-        ['product', 'movement', '1 — n'],
-        ['movement', 'location', 'at'],
-        ['supplier', 'product', 'supplies'],
-        ['rule', 'product', 'watches'],
+        ['file', 'parse', 'read locally'],
+        ['parse', 'normal', 'usernames'],
+        ['normal', 'analyze', 'two lists'],
+        ['analyze', 'results', 'three lists'],
       ],
     },
+    details: [
+      {
+        title: 'No server at all',
+        body: 'Parsing and comparing happen in the browser. The project’s rules rule out a backend, API routes and sending export data anywhere — including analytics.',
+      },
+      {
+        title: 'A parser for messy exports',
+        body: 'Exports come in several shapes: split files like followers_1.json and followers_2.json, HTML instead of JSON, different profile link formats. The parser recognises each file by its name or content and reads usernames from all of them.',
+      },
+      {
+        title: 'Compare clean names',
+        body: 'Usernames are trimmed, stripped of @, lowercased and de-duplicated before comparing, so the same account can’t end up on both sides by accident.',
+      },
+    ],
+    learnedLabel: 'What the project explores',
     learned:
-      'Resource-management games teach you to watch the rate of change before the total. Stockrooms work the same way.',
-    next: ['Barcode scanning on mobile', 'Supplier purchase orders', 'Multi-location transfers'],
+      'This project demonstrates a privacy-first architecture where Instagram export data is parsed locally in the browser, without login credentials, scraping, unofficial APIs or server-side uploads.',
+    limits: [
+      'It can’t look up an account by username. It only reads an export you provide.',
+      'Results are only as complete as the export; a limited date range can give incomplete counts.',
+    ],
+  },
+  {
+    slug: 'crypto-ta',
+    index: '04',
+    name: 'Crypto Technical Analysis',
+    kind: 'Windows desktop app · market analysis',
+    ink: 'var(--ink-crypto)',
+    tagline: 'Charts, indicators and backtests on the desktop.',
+    brief:
+      'A Windows desktop app for technical analysis of Binance USDT-M futures, using public market data with no API key: charts, indicators, trade setups, backtesting and desktop notifications.',
+    meta: [
+      { k: 'Type', v: 'Personal desktop app' },
+      { k: 'Status', v: 'Runs locally on Windows' },
+    ],
+    links: { code: 'https://github.com/emirseren100/Crypto-Technical-Analysis' },
+    stack: ['Python', 'PyQt5', 'pandas', 'NumPy', 'matplotlib', 'mplfinance', 'requests', 'plyer', 'pytest'],
+    stackNote: 'The project’s stack. Python isn’t part of my main learning path right now; that path is the web.',
+    does:
+      'The app pulls candle data from Binance’s public futures API and draws it with indicators such as moving averages, RSI, MACD, Bollinger Bands and ATR. From those it builds long or short setups with a stop-loss and three take-profit levels. It can backtest the same rules on past data, keep a paper-trading record, and send a Windows notification when a setup appears.',
+    whyLabel: 'Why I built it',
+    why:
+      'The project explores technical analysis on the desktop: charting, indicators, backtesting and configurable trade setups, all built on public market data.',
+    system: {
+      caption:
+        'The main modules. Market data comes in through one fetcher, indicators are computed with pandas, and the same signal logic feeds the interface, the backtester and notifications.',
+      entities: [
+        { id: 'fetch', label: 'data_fetcher', fields: ['public futures API', 'candles · prices'], at: [0, 0] },
+        { id: 'ind', label: 'indicators', fields: ['SMA · EMA · RSI', 'MACD · BB · ATR'], at: [1, 0] },
+        { id: 'signal', label: 'signal_engine', fields: ['direction', 'stop-loss', 'TP1 · TP2 · TP3'], at: [2, 0] },
+        { id: 'notify', label: 'notifications', fields: ['Windows (plyer)'], at: [0, 1] },
+        { id: 'ui', label: 'main_window', fields: ['PyQt5 tabs', 'charts'], at: [1, 1] },
+        { id: 'backtest', label: 'backtest', fields: ['replays signals', 'on past candles'], at: [2, 1] },
+      ],
+      links: [
+        ['fetch', 'ind', 'DataFrame'],
+        ['ind', 'signal', 'scores'],
+        ['signal', 'ui', 'setups'],
+        ['signal', 'backtest', 'same rules'],
+        ['ui', 'notify', 'alerts'],
+      ],
+    },
+    details: [
+      {
+        title: 'Public data only',
+        body: 'Market data comes from Binance’s public futures endpoints, so the app needs no API key and never touches an account.',
+      },
+      {
+        title: 'TP profiles move targets, not risk',
+        body: 'Normal, higher-target and conservative profiles change only the take-profit distances — 1.2R, 2.2R and 3.5R on normal. The stop-loss and the signal logic stay the same.',
+      },
+      {
+        title: 'Tests for the maths',
+        body: 'Indicator and price-action functions have pytest tests, so a broken calculation shows up as a failing test instead of a strange chart.',
+      },
+    ],
+    learnedLabel: 'What the project explores',
+    learned:
+      'This project explores desktop technical-analysis workflows using public market data, including indicators, charting, backtesting and configurable trade setups.',
+    limits: [
+      'Not investment advice. Crypto trading carries high risk.',
+      'An independent project, not affiliated with, endorsed or sponsored by Binance. The name only says where the public data comes from.',
+      'Built and tested on Windows 10 and 11. The interface is in Turkish.',
+    ],
   },
 ];
 
@@ -198,7 +315,7 @@ export const playgroundProject = {
   ink: 'var(--ink-play)',
   tagline: 'Where the square came from.',
   brief:
-    'Where ideas go before they are allowed to become projects: physics, game mechanics and interface experiments — including the engine behind the square at the top of the page.',
+    'Small experiments with physics, game mechanics and interfaces — including the engine behind the square at the top of the page.',
 };
 
 export const getProject = (slug: string) => projects.find((p) => p.slug === slug);

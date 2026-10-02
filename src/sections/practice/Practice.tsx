@@ -30,7 +30,7 @@ export function Practice() {
   return (
     <section id="practice" data-theme="dark" data-chapter="practice" className={styles.section}>
       <div className="wrap">
-        <SectionHead index="00" label="Practice" aside="What I build" />
+        <SectionHead index="00" label="Practice" aside="How I learn" />
 
         <div className={`grid ${styles.layout}`}>
           <p ref={bodyRef} className={`split ${styles.body} ${inView ? 'is-in' : ''}`}>
@@ -78,7 +78,7 @@ export function Practice() {
           </Reveal>
 
           <Reveal className={styles.picky} delay={300}>
-            <p className="label">Things I’ve been told I’m too picky about</p>
+            <p className="label">Things I’m picky about</p>
             <ul>
               {practice.picky.map((p) => (
                 <li key={p}>{p}</li>

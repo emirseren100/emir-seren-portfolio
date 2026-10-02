@@ -4,16 +4,19 @@ import { opticalCamel, SplitWords } from '../components/SplitWords';
 import { projects, type Project } from '../content/projects';
 import { site } from '../content/site';
 import { Link } from '../lib/router';
+import { ProjectLinks } from '../sections/work/ProjectLinks';
+import { CryptoVisual } from '../visuals/CryptoVisual';
 import { DevFlowVisual } from '../visuals/DevFlowVisual';
-import { ScoutLabVisual } from '../visuals/ScoutLabVisual';
+import { FollowClarityVisual } from '../visuals/FollowClarityVisual';
 import { StockFlowVisual } from '../visuals/StockFlowVisual';
 import { SystemDiagram } from '../visuals/SystemDiagram';
 import styles from './CaseStudy.module.css';
 
 const VISUALS = {
-  scoutlab: ScoutLabVisual,
-  devflow: DevFlowVisual,
   stockflow: StockFlowVisual,
+  devflow: DevFlowVisual,
+  'follow-clarity': FollowClarityVisual,
+  'crypto-ta': CryptoVisual,
 };
 
 export default function CaseStudy({ project: p }: { project: Project }) {
@@ -58,8 +61,10 @@ export default function CaseStudy({ project: p }: { project: Project }) {
                 </div>
               ))}
               <div>
-                <dt>Stack</dt>
-                <dd>{p.stack.join(', ')}</dd>
+                <dt>Links</dt>
+                <dd>
+                  <ProjectLinks links={p.links} />
+                </dd>
               </div>
             </Reveal>
           </div>
@@ -70,26 +75,26 @@ export default function CaseStudy({ project: p }: { project: Project }) {
             <Reveal className={styles.stageInner} delay={250}>
               <Visual large />
             </Reveal>
-            <p className={styles.stageNote}>Interactive mockup. It runs on sample data — use it.</p>
+            <p className={styles.stageNote}>A simplified re-creation of the real app, running on sample data — try it.</p>
           </div>
         </div>
       </header>
 
       <div data-theme="paper" data-chapter="case" className={styles.body}>
         <div className="wrap">
-          <Block n="01" label="The problem">
+          <Block n="01" label="What it does">
             <Reveal as="p" className={styles.lead}>
-              {p.problem}
+              {p.does}
             </Reveal>
           </Block>
 
-          <Block n="02" label="The approach">
+          <Block n="02" label={p.whyLabel}>
             <Reveal as="p" className={styles.lead}>
-              {p.approach}
+              {p.why}
             </Reveal>
           </Block>
 
-          <Block n="03" label="The system">
+          <Block n="03" label="How it fits together">
             <Reveal className={styles.diagramScroll} mode="fade">
               <div className={styles.diagram}>
                 <SystemDiagram system={p.system} />
@@ -98,11 +103,18 @@ export default function CaseStudy({ project: p }: { project: Project }) {
             <p className={styles.caption}>{p.system.caption}</p>
           </Block>
 
-          <Block n="04" label="Decisions">
+          <Block n="04" label="Project stack">
+            <Reveal as="p" className={styles.lead}>
+              {p.stack.join(', ')}
+            </Reveal>
+            <p className={styles.caption}>{p.stackNote}</p>
+          </Block>
+
+          <Block n="05" label="Details">
             <ol className={styles.decisions}>
-              {p.decisions.map((d, k) => (
+              {p.details.map((d, k) => (
                 <Reveal as="li" key={d.title} className={styles.decision} delay={k * 100}>
-                  <span className={styles.decisionNum}>D{k + 1}</span>
+                  <span className={styles.decisionNum}>{String(k + 1).padStart(2, '0')}</span>
                   <h3 className={styles.decisionTitle}>{d.title}</h3>
                   <p>{d.body}</p>
                 </Reveal>
@@ -110,13 +122,19 @@ export default function CaseStudy({ project: p }: { project: Project }) {
             </ol>
           </Block>
 
-          <Block n="05" label="What it taught me">
-            <SplitWords as="p" className={styles.quote} text={`“${p.learned}”`} />
+          <Block n="06" label={p.learnedLabel}>
+            {p.learnedLabel === 'What I learned' ? (
+              <SplitWords as="p" className={styles.quote} text={`“${p.learned}”`} />
+            ) : (
+              <Reveal as="p" className={styles.lead}>
+                {p.learned}
+              </Reveal>
+            )}
           </Block>
 
-          <Block n="06" label="Next">
+          <Block n="07" label="Limits">
             <ul className={styles.next}>
-              {p.next.map((n, k) => (
+              {p.limits.map((n, k) => (
                 <Reveal as="li" key={n} delay={k * 80}>
                   {n}
                 </Reveal>

@@ -3,17 +3,19 @@ import { SplitWords } from '../../components/SplitWords';
 import { Reveal } from '../../components/Reveal';
 import { playgroundProject, projects } from '../../content/projects';
 import { Link } from '../../lib/router';
+import { CryptoVisual } from '../../visuals/CryptoVisual';
 import { DevFlowVisual } from '../../visuals/DevFlowVisual';
-import { ScoutLabVisual } from '../../visuals/ScoutLabVisual';
+import { FollowClarityVisual } from '../../visuals/FollowClarityVisual';
 import { StockFlowVisual } from '../../visuals/StockFlowVisual';
 import { UnitField } from '../../visuals/UnitField';
 import { ProjectChapter } from './ProjectChapter';
 import styles from './Work.module.css';
 
 const VISUALS = {
-  scoutlab: <ScoutLabVisual />,
-  devflow: <DevFlowVisual />,
   stockflow: <StockFlowVisual />,
+  devflow: <DevFlowVisual />,
+  'follow-clarity': <FollowClarityVisual />,
+  'crypto-ta': <CryptoVisual />,
 };
 const LAYOUTS = ['a', 'b', 'c'] as const;
 
@@ -22,10 +24,10 @@ export function Work() {
     <section id="work" data-theme="dark" data-chapter="work" className={styles.section}>
       <div className="wrap">
         <SectionHead index="01" label="Selected work" aside="Interactive mockups" />
-        <SplitWords as="h2" className={styles.title} text="Three projects and a playground." />
+        <SplitWords as="h2" className={styles.title} text="Four projects and a playground." />
         <Reveal as="p" className={styles.intro} delay={250}>
-          All three are personal projects. I designed and built each one, front end to back end, and the
-          interfaces below run on sample data — use them.
+          These are projects I’ve worked on while learning software development. Each preview below is a
+          simplified re-creation of the real app, running on sample data — try them.
         </Reveal>
 
         {projects.map((p, i) => (

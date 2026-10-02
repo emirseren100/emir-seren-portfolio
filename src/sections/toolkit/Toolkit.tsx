@@ -9,9 +9,9 @@ export function Toolkit() {
   return (
     <section id="toolkit" data-theme="paper" data-chapter="toolkit" className={styles.section}>
       <div className="wrap">
-        <SectionHead index="02.3" label="Toolkit" aside="Sorted by how well I know them" />
+        <SectionHead index="02.3" label="Toolkit" aside="Current skills first" />
 
-        <SplitWords as="h2" className={styles.title} text="What I use, what I’m learning, what’s next." />
+        <SplitWords as="h2" className={styles.title} text="What I use now, and what I’m learning next." />
 
         <div className={styles.columns}>
           {toolkit.map((g, gi) => (
@@ -33,9 +33,7 @@ export function Toolkit() {
         <Reveal className={`grid ${styles.ai}`} delay={100}>
           <p className={styles.aiLabel}>On AI-assisted development</p>
           <p className={styles.aiText}>
-            I use AI tools the way I’d use a sharp colleague: to check my thinking, question an approach,
-            and move faster through the boring parts. <em>I still read every line,</em> and I don’t ship
-            code I can’t explain.
+            I use AI tools to explore ideas, debug faster, and <em>learn from the code I’m building.</em>
           </p>
         </Reveal>
       </div>

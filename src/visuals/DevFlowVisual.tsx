@@ -1,94 +1,184 @@
-import { useRef, type CSSProperties } from 'react';
+import { useEffect, useReducer, useRef, useState, type CSSProperties } from 'react';
 import { useAutoplay } from '../lib/useAutoplay';
 import { Frame } from './Frame';
 import styles from './DevFlowVisual.module.css';
 
-const STATES = ['Idea', 'Building', 'Review', 'Shipped'] as const;
+/** The real app's issue statuses, in board order. */
+const COLUMNS = ['Backlog', 'To do', 'In progress', 'In review', 'Done'] as const;
+const DONE = COLUMNS.length - 1;
 
-const TASKS = [
-  { id: 41, title: 'Radar axes per role', branch: 'feat/role-axes', files: 6 },
-  { id: 42, title: 'Batch socket updates', branch: 'perf/batch-events', files: 3 },
-  { id: 43, title: 'Fuzzy command search', branch: 'feat/palette-fuzzy', files: 4 },
+type Priority = 'Low' | 'Medium' | 'High' | 'Urgent';
+interface Issue {
+  n: number;
+  title: string;
+  type: 'task' | 'bug';
+  priority: Priority;
+  who: string;
+}
+interface Event {
+  id: number;
+  who: string;
+  text: string;
+}
+interface State {
+  cols: Issue[][];
+  next: number;
+  tick: number;
+  events: Event[];
+}
+type Action = { type: 'auto' } | { type: 'move'; n: number; dir: -1 | 1 };
+
+/** Sample issues for a fictional "API" project. Initials are made up. */
+const POOL: Omit<Issue, 'n'>[] = [
+  { title: 'Paginate the issue list', type: 'task', priority: 'Medium', who: 'AK' },
+  { title: 'Due date shows the wrong day', type: 'bug', priority: 'High', who: 'MS' },
+  { title: 'Add a goal to sprints', type: 'task', priority: 'Low', who: 'EY' },
+  { title: 'Validate project keys', type: 'task', priority: 'Medium', who: 'AK' },
+  { title: 'Empty state for the board', type: 'task', priority: 'Low', who: 'MS' },
+  { title: 'Comment order is reversed', type: 'bug', priority: 'Medium', who: 'EY' },
+  { title: 'Filter issues by assignee', type: 'task', priority: 'High', who: 'AK' },
+  { title: 'Limit login attempts', type: 'task', priority: 'Urgent', who: 'MS' },
+  { title: 'Sort by due date', type: 'task', priority: 'Low', who: 'EY' },
 ];
 
-/** Who moved the task. Only the first step needs a person; the rest come from the tools. */
-const SOURCES = ['you', 'git', 'git', 'ci'] as const;
+const issue = (n: number): Issue => ({ n, ...POOL[(n - 1) % POOL.length]! });
 
-function describe(step: number) {
-  const task = TASKS[Math.floor(step / STATES.length) % TASKS.length]!;
-  const state = step % STATES.length;
-  const minutes = 9 * 60 + 12 + step * 23;
-  const time = `${String(Math.floor(minutes / 60) % 24).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
-  const detail = [
-    'created from a note',
-    `pushed ${task.branch}`,
-    `pull request opened · ${task.files} files`,
-    'checks passed · merged',
-  ][state]!;
-  const transition = state === 0 ? 'new task' : `${STATES[state - 1]!.toLowerCase()} → ${STATES[state]!.toLowerCase()}`;
-  return { task, state, time, detail, transition, source: SOURCES[state]! };
+const INITIAL: State = {
+  cols: [[issue(8), issue(9)], [issue(6), issue(7)], [issue(4), issue(5)], [issue(3)], [issue(1), issue(2)]],
+  next: 10,
+  tick: 0,
+  events: [
+    { id: 2, who: 'MS', text: 'API-3 · In progress → In review' },
+    { id: 1, who: 'AK', text: 'API-9 created' },
+  ],
+};
+
+const log = (s: State, who: string, text: string): Event[] =>
+  [{ id: (s.events[0]?.id ?? 0) + 1, who, text }, ...s.events].slice(0, 4);
+
+function move(s: State, n: number, dir: -1 | 1, who: string): State {
+  const from = s.cols.findIndex((c) => c.some((i) => i.n === n));
+  const to = from + dir;
+  if (from < 0 || to < 0 || to > DONE) return s;
+  const card = s.cols[from]!.find((i) => i.n === n)!;
+  const cols = s.cols.map((c, k) => (k === from ? c.filter((i) => i.n !== n) : k === to ? [...c, card] : c));
+  return { ...s, cols, events: log(s, who, `API-${n} · ${COLUMNS[from]} → ${COLUMNS[to]}`) };
+}
+
+function reducer(s: State, a: Action): State {
+  if (a.type === 'move') return move(s, a.n, a.dir, 'you');
+  // Work the board from right to left, one column per tick, so cards keep flowing towards Done.
+  for (let k = 0; k < DONE; k++) {
+    const col = DONE - 1 - ((s.tick + k) % DONE);
+    const card = s.cols[col]![0];
+    if (!card) continue;
+    let next = move({ ...s, tick: s.tick + k + 1 }, card.n, 1, card.who);
+    // Keep the backlog stocked: a new issue arrives as the last one is picked up.
+    if (col === 0 && next.cols[0]!.length === 0) {
+      next = {
+        ...next,
+        cols: next.cols.map((c, i) => (i === 0 ? [issue(next.next)] : c)),
+        next: next.next + 1,
+        events: log(next, 'AK', `API-${next.next} created`),
+      };
+    }
+    return next;
+  }
+  return s;
 }
 
 export function DevFlowVisual({ large = false }: { large?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
-  // Start a few steps in, so the event log already has some history.
-  const { position: step, setPosition, paused, pause, resume } = useAutoplay(ref, 2400, 5);
-  const now = describe(step);
-  const log = Array.from({ length: Math.min(5, step + 1) }, (_, i) => ({ step: step - i, ...describe(step - i) }));
+  const { position, paused, pause, resume } = useAutoplay(ref, 2600);
+  const [state, dispatch] = useReducer(reducer, INITIAL);
+  const [selected, setSelected] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (position > 0) dispatch({ type: 'auto' });
+  }, [position]);
+
+  const col = selected === null ? -1 : state.cols.findIndex((c) => c.some((i) => i.n === selected));
+  const nudge = (dir: -1 | 1) => {
+    if (selected === null) return;
+    pause();
+    dispatch({ type: 'move', n: selected, dir });
+  };
 
   return (
     <div ref={ref}>
       <Frame
         app="DevFlow"
-        context="Flow · this week"
+        context="API · board · sample data"
         right={<span className={styles.live} data-paused={paused}>{paused ? 'paused' : 'live'}</span>}
         playback={{ paused, onToggle: paused ? resume : pause }}
-        label="DevFlow interface: a task moving through idea, building, review and shipped as events arrive from git and CI, with an event log underneath."
+        label="DevFlow re-creation: a Kanban board for a sample project. Issues move from Backlog to Done, and an activity feed records each change."
         className={`${styles.frame} ${large ? styles.large : ''}`}
       >
-        <div className={styles.flow} style={{ '--ink': 'var(--ink-devflow)', '--s': now.state } as CSSProperties}>
-          <ol className={styles.track}>
-            {STATES.map((s, i) => (
-              <li key={s} className={styles.node} data-state={i < now.state ? 'past' : i === now.state ? 'now' : 'next'}>
-                <span className={styles.nodeMark} aria-hidden="true" />
-                <span className={styles.nodeLabel}>{s}</span>
-              </li>
-            ))}
-          </ol>
-          <div className={styles.rail} aria-hidden="true">
-            <span className={styles.railFill} />
+        <div className={styles.boardScroll} tabIndex={0} aria-label="Board columns">
+          <div className={styles.board} style={{ '--ink': 'var(--ink-devflow)' } as CSSProperties}>
+            {state.cols.map((cards, k) => {
+              const shown = k === DONE ? cards.slice(-2) : cards;
+              return (
+                <section key={COLUMNS[k]} className={styles.col} aria-label={`${COLUMNS[k]}, ${cards.length} issues`}>
+                  <p className={styles.colHead}>
+                    {COLUMNS[k]} <span>{cards.length}</span>
+                  </p>
+                  <ul>
+                    {shown.map((i) => (
+                      <li key={i.n}>
+                        <button
+                          type="button"
+                          className={styles.card}
+                          aria-pressed={selected === i.n}
+                          onClick={() => {
+                            pause();
+                            setSelected(selected === i.n ? null : i.n);
+                          }}
+                        >
+                          <span className={styles.key}>API-{i.n}</span>
+                          <span className={styles.title}>{i.title}</span>
+                          <span className={styles.meta}>
+                            <span className={styles.type} data-type={i.type}>
+                              {i.type}
+                            </span>
+                            <span>{i.priority}</span>
+                            <span className={styles.who}>{i.who}</span>
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                  {k === DONE && cards.length > shown.length ? (
+                    <p className={styles.more}>+{cards.length - shown.length} earlier</p>
+                  ) : null}
+                </section>
+              );
+            })}
           </div>
-          <div className={styles.cardLane}>
-            <div className={styles.card} key={now.task.id}>
-              <span className={styles.cardId}>#{now.task.id}</span>
-              <span className={styles.cardTitle}>{now.task.title}</span>
-              <span className={styles.cardState}>
-                {STATES[now.state]} · via {now.source}
-              </span>
-            </div>
-          </div>
-          {paused ? (
-            <button type="button" className={`hit ${styles.advance}`} onClick={() => setPosition((n) => n + 1)}>
-              Next event <span aria-hidden="true">→</span>
-            </button>
-          ) : null}
+        </div>
+
+        <div className={styles.tools}>
+          <span className={styles.hint}>{selected === null ? 'Select an issue to move it' : `API-${selected} selected`}</span>
+          <button type="button" className={`hit ${styles.moveBtn}`} onClick={() => nudge(-1)} disabled={col <= 0}>
+            <span aria-hidden="true">←</span> Move left
+          </button>
+          <button type="button" className={`hit ${styles.moveBtn}`} onClick={() => nudge(1)} disabled={col < 0 || col >= DONE}>
+            Move right <span aria-hidden="true">→</span>
+          </button>
         </div>
 
         <div className={styles.log}>
           <div className={styles.logHead}>
-            <span>Event log</span>
-            <span>append-only</span>
+            <span>Activity</span>
+            <span>newest first</span>
           </div>
           <ol aria-live={paused ? 'polite' : 'off'}>
-            {log.map((e, i) => (
-              <li key={e.step} className={styles.event} data-fresh={i === 0}>
-                <span className={styles.time}>{e.time}</span>
-                <span className={styles.source} data-source={e.source}>
-                  {e.source}
+            {state.events.map((e, i) => (
+              <li key={e.id} className={styles.event} data-fresh={i === 0}>
+                <span className={styles.source} data-you={e.who === 'you'}>
+                  {e.who}
                 </span>
-                <span className={styles.evTask}>#{e.task.id}</span>
-                <span className={styles.evTransition}>{e.transition}</span>
-                <span className={styles.evDetail}>{e.detail}</span>
+                <span>{e.text}</span>
               </li>
             ))}
           </ol>

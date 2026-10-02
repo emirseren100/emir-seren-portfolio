@@ -4,6 +4,7 @@ import { Reveal } from '../../components/Reveal';
 import { SplitWords } from '../../components/SplitWords';
 import type { Project } from '../../content/projects';
 import { Link } from '../../lib/router';
+import { ProjectLinks } from './ProjectLinks';
 import styles from './Work.module.css';
 
 interface Props {
@@ -51,18 +52,23 @@ export function ProjectChapter({ project: p, layout, visual }: Props) {
             {p.brief}
           </Reveal>
           <Reveal as="dl" className={styles.meta} delay={320}>
-            {/* Role and type are the same for every project, so the Work intro says them once. */}
             <div>
               <dt>Status</dt>
               <dd>{status}</dd>
             </div>
             <div>
-              <dt>Key decision</dt>
-              <dd>{p.decisions[0]?.title}</dd>
+              <dt>Highlight</dt>
+              <dd>{p.details[0]?.title}</dd>
             </div>
             <div>
-              <dt>Stack</dt>
+              <dt>Project stack</dt>
               <dd>{p.stack.join(', ')}</dd>
+            </div>
+            <div>
+              <dt>Links</dt>
+              <dd>
+                <ProjectLinks links={p.links} />
+              </dd>
             </div>
           </Reveal>
           <Reveal delay={400}>

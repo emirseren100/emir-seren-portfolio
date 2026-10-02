@@ -15,12 +15,12 @@ export function About() {
 
         <div className={`grid ${styles.intro}`}>
           <Reveal as="p" className={styles.lead} delay={150}>
-            I study Digital Game Design, and I’m moving into full-stack development as my main quest.
+            I study Digital Game Design, with full-stack development as my goal.
           </Reveal>
           <Reveal as="p" className={styles.introBody} delay={250}>
-            People sometimes ask whether that makes the degree a detour. It doesn’t. Almost everything I
-            learned designing games has a direct equivalent in building software. I just had to learn the
-            new names for it.
+            People sometimes ask whether that makes the degree a detour. I don’t think so. A lot of what
+            I learned designing games carries over to building software — I’m learning the new names for
+            it, and the tools that go with them.
           </Reveal>
         </div>
 

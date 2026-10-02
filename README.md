@@ -1,6 +1,6 @@
 # Emir Şeren — Portfolio
 
-Personal site of Emir Şeren: Digital Game Design student, full-stack developer in progress.
+Personal site of Emir Şeren: Digital Game Design student transitioning into full-stack development.
 
 The idea behind it: game design and software engineering are closer than they look. So the site borrows
 from games quietly — in pacing, feedback and small discoveries — instead of dressing up as one.
@@ -11,8 +11,10 @@ from games quietly — in pacing, feedback and small discoveries — instead of 
 - **Game feel lab.** The square runs on a tiny platformer engine (`src/lib/platformer.ts`) with coyote
   time, jump buffering, variable jump height and squash & stretch. The lab exposes its parameters — and
   changing them changes the square at the top of the page too.
-- **Working mockups, not screenshots.** ScoutLab, DevFlow and StockFlow each have an interactive interface
-  built in code, running on sample data, plus a case study page with an animated data-model diagram.
+- **Working mockups, not screenshots.** StockFlow, DevFlow, Follow Clarity and Crypto Technical Analysis each
+  have a simplified, interactive re-creation built in code and running on sample data, plus a case study page
+  with an animated system diagram. Project facts come from each project's own repository; a project's stack
+  is listed as the project's stack, not as a personal skill.
 - **Experiments.** Boids, a verlet rope and a wave-function-collapse tile generator.
 
 ## Stack
@@ -55,9 +57,6 @@ All copy lives in two files:
 - `src/content/site.ts` — name, email, links, practice text, about/now/toolkit content
 - `src/content/projects.ts` — project briefs and case studies
 
-**Before publishing:** `site.email` is a placeholder (`hello@emirseren.dev`). Replace it with a real inbox,
-and add any other profiles to `site.links`.
-
 ## Structure
 
 ```
@@ -77,7 +76,7 @@ scripts/        screenshot / QA / OG-image tooling
 ## Deploying
 
 Deploy `dist/` to any static host. Each prerendered route has its own `index.html`
-(`/work/scoutlab/index.html`, …); unknown paths must fall back to `/index.html`, where the client renders
+(`/work/stockflow/index.html`, …); unknown paths must fall back to `/index.html`, where the client renders
 the right page. `vercel.json` and `public/_redirects` (Netlify) already do that.
 
 ## Accessibility notes

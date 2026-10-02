@@ -47,7 +47,7 @@ interface SplitWordsProps {
   start?: number;
   /** Observe its own visibility. Set false when a parent controls `.is-in`. */
   self?: boolean;
-  /** Open up lower→Upper joins (ScoutLab, DevFlow) that collide at tight display tracking. */
+  /** Open up lower→Upper joins (StockFlow, DevFlow) that collide at tight display tracking. */
   camel?: boolean;
   id?: string;
   children?: ReactNode;

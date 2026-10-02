@@ -198,12 +198,12 @@ export function Hero() {
           <p className={`mono ${styles.metaB}`}>
             Digital Game Design student
             <br />
-            <span className={styles.dim}>→ full-stack developer, in progress</span>
+            <span className={styles.dim}>→ transitioning to full-stack</span>
           </p>
           <p className={`mono ${styles.metaC}`}>
-            Currently building
+            Open to
             <br />
-            <span className={styles.dim}>ScoutLab, a scouting tool</span>
+            <span className={styles.dim}>software internships</span>
           </p>
         </div>
 

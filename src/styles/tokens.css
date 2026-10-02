@@ -32,7 +32,8 @@
   --signal-deep: #b93a22; /* text-safe on paper */
 
   /* Project inks */
-  --ink-scout: #9db08a;
+  --ink-follow: #9db08a;
+  --ink-crypto: #b7a0b4;
   --ink-devflow: #93a3c0;
   --ink-stock: #cfa85f;
   --ink-play: var(--signal);

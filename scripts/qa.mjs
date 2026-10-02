@@ -40,7 +40,7 @@ const hiddenInView = (page) =>
   });
 
 // 1. Routes, with and without reduced motion
-for (const path of ['/', '/work/scoutlab', '/work/devflow', '/work/stockflow', '/nope']) {
+for (const path of ['/', '/work/stockflow', '/work/devflow', '/work/follow-clarity', '/work/crypto-ta', '/nope']) {
   for (const reduced of [false, true]) {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, reducedMotion: reduced ? 'reduce' : 'no-preference' });
     const page = await ctx.newPage();
@@ -59,7 +59,7 @@ for (const [w, h, dsf, tag] of [[390, 844, 2, '390'], [768, 1024, 2, '768'], [10
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: dsf });
   const page = await ctx.newPage();
   watch(page, tag);
-  for (const path of ['/', '/work/stockflow']) {
+  for (const path of ['/', '/work/stockflow', '/work/devflow', '/work/follow-clarity', '/work/crypto-ta']) {
     await page.goto(base + path, { waitUntil: 'networkidle' });
     await scrollThrough(page, h, 40);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
@@ -90,7 +90,7 @@ for (const [w, h, dsf, tag] of [[390, 844, 2, '390'], [768, 1024, 2, '768'], [10
   await page.waitForTimeout(1800);
   await page.locator('text=Read the case study').first().click();
   await page.waitForTimeout(2200);
-  check(page.url().endsWith('/work/scoutlab'), `case study route — ${page.url()}`);
+  check(page.url().endsWith('/work/stockflow'), `case study route — ${page.url()}`);
   await page.evaluate(() => scrollTo(0, 1600));
   await page.waitForTimeout(800);
   await page.goBack();
@@ -156,7 +156,7 @@ for (const [w, h, dsf, tag] of [[390, 844, 2, '390'], [768, 1024, 2, '768'], [10
       }),
     );
   }
-  for (const want of ['The name is walkable.', 'Playable title', 'Pause the ScoutLab demo', 'Game feel lab', 'Gravity', 'How far each bird sees', 'hello@']) {
+  for (const want of ['The name is walkable.', 'Playable title', 'Pause the DevFlow demo', 'Game feel lab', 'Gravity', 'How far each bird sees', 'e34emir@']) {
     check(seen.some((s) => s.includes(want) || s === want), `keyboard reaches “${want}”`);
   }
   const ranges = await page.evaluate(() => [...document.querySelectorAll('input[type=range]')].every((r) => r.labels?.length && r.getAttribute('aria-valuetext')));

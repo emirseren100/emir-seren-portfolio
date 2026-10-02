@@ -52,8 +52,8 @@ export function Contact() {
 
         <div className={`grid ${styles.body}`}>
           <Reveal as="p" className={styles.text} delay={300}>
-            I’m looking for an internship or junior role on a team that cares about the details — and I’m
-            always happy to talk about a project, a game mechanic, or an interface that bugs you.
+            I’m open to internship opportunities in software development. I’m also happy to talk about a
+            project, a game mechanic, or an interface that bugs you.
           </Reveal>
 
           <Reveal className={styles.reach} delay={420}>
@@ -83,7 +83,7 @@ export function Contact() {
             © {new Date().getFullYear()} {site.name}
           </p>
           <p className={styles.fCol}>
-            Designed and built by hand. Set in Bricolage Grotesque, Newsreader and Geist Mono.
+            Built with AI-assisted tools. Set in Bricolage Grotesque, Newsreader and Geist Mono.
           </p>
           <p className={styles.fCol}>
             <Link to="#top" className="u-link hit">

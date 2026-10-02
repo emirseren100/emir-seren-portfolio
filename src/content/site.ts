@@ -4,10 +4,12 @@
  */
 export const site = {
   name: 'Emir Şeren',
-  role: 'Game designer, writing software',
-  /** Replace with a real inbox before publishing. */
-  email: 'hello@emirseren.dev',
-  links: [{ label: 'GitHub', href: 'https://github.com/emirseren100' }],
+  role: 'Digital Game Design student transitioning into full-stack development',
+  email: 'e34emir@gmail.com',
+  links: [
+    { label: 'GitHub', href: 'https://github.com/emirseren100' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/emirseren' },
+  ],
   year: 2026,
   season: 'Autumn 2026',
 };
@@ -34,16 +36,16 @@ export const chapters: Record<string, string> = {
 export const practice = {
   // Segments: plain strings, or annotated words with a margin note.
   body: [
-    'I build ',
-    { word: 'interfaces', note: 'React, TypeScript, and CSS I actually understand.' },
-    ' that answer back, ',
-    { word: 'backends', note: 'Node, REST and PostgreSQL. Learning to love boring.' },
-    ' that don’t surprise anyone, and ',
-    { word: 'small games', note: 'Canvas, Unity, game jams. Where most of my ideas start.' },
-    ' when nobody is watching.',
+    'I learn software by ',
+    { word: 'building', note: 'Small projects with a clear goal. StockFlow is how I practised JavaScript.' },
+    ' things, ',
+    { word: 'breaking', note: 'Bugs teach me the most. I try to find the cause before I change anything.' },
+    ' them, and ',
+    { word: 'understanding', note: 'I want to know what the code I use is doing, including code written with AI tools.' },
+    ' why they work.',
   ] as Array<string | { word: string; note: string }>,
   follow:
-    'I care about the parts most people skip: the easing on a menu, the empty state, the error message, the half second before a page loads.',
+    'I’m working toward full-stack development one step at a time: JavaScript first, then TypeScript, React and the back end. Along the way I care about the parts people skip — the empty state, the error message, the focus ring.',
   picky: [
     'Kerning in buttons',
     'Loading states',
@@ -95,29 +97,30 @@ export const rules = [
 
 export const now = [
   { k: 'Studying', v: 'Digital Game Design, at university.' },
-  { k: 'Building', v: 'ScoutLab, toward a first public version.' },
-  { k: 'Learning', v: 'Backend depth: databases, auth, testing, deployment.' },
+  { k: 'Learning', v: 'TypeScript, now that the JavaScript fundamentals are done.' },
+  { k: 'Looking for', v: 'An internship in software development.' },
 ];
 
+/** Current skills first. Only "Using now" is a skill claim; everything else is labelled for what it is. */
 export const toolkit = [
   {
-    group: 'Daily',
-    note: 'Comfortable. I reach for these without thinking.',
-    items: ['TypeScript', 'React', 'HTML & modern CSS', 'Git', 'Figma', 'Node.js'],
+    group: 'Using now',
+    note: 'What I build with today.',
+    items: ['HTML', 'CSS', 'JavaScript', 'Git', 'GitHub'],
   },
   {
-    group: 'Getting fluent',
-    note: 'Shipping with them, still learning the edges.',
-    items: ['PostgreSQL', 'Express', 'REST API design', 'Vitest & Playwright', 'Next.js', 'Docker'],
+    group: 'Learning next',
+    note: 'In this order, after JavaScript. Not skills yet.',
+    items: ['TypeScript', 'React', 'Testing', 'Node.js / Express', 'SQL / PostgreSQL', 'Next.js', 'Docker / deployment'],
   },
   {
-    group: 'Next up',
-    note: 'Where the next year of evenings goes.',
-    items: ['System design', 'Auth, done properly', 'CI/CD pipelines', 'Performance profiling', 'WebGL'],
+    group: 'AI-assisted workflow',
+    note: 'Tools I work with, not languages.',
+    items: ['Claude', 'Cursor', 'Codex', 'Antigravity'],
   },
   {
-    group: 'From game design',
-    note: 'The foundation everything else sits on.',
-    items: ['Unity & C#', 'Systems design', 'Playtesting', 'Rapid prototyping', 'Level design'],
+    group: 'Game design background',
+    note: 'Ways of thinking that carry over.',
+    items: ['Systems thinking', 'Prototyping', 'Playtesting', 'Interaction thinking'],
   },
 ];

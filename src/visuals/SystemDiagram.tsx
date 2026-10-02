@@ -3,7 +3,7 @@ import type { Project } from '../content/projects';
 import { useInView } from '../lib/useInView';
 import styles from './SystemDiagram.module.css';
 
-const BOX_W = 196;
+const BOX_W = 224;
 const ROW_H = 18;
 const HEAD_H = 34;
 const GAP_X = 300;
@@ -31,7 +31,7 @@ export function SystemDiagram({ system }: { system: Project['system'] }) {
       viewBox={`0 0 ${width} ${height}`}
       className={`${styles.diagram} ${inView ? styles.in : ''}`}
       role="img"
-      aria-label={`Data model: ${system.entities.map((e) => e.label).join(', ')}.`}
+      aria-label={`Diagram: ${system.entities.map((e) => e.label).join(', ')}.`}
     >
       {system.links.map(([a, b, label], i) => {
         const A = byId.get(a);
